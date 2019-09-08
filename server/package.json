@@ -5,9 +5,7 @@
   "description": "An offline-first, collaborative documents app",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "start": "node server.js",
-    "watch": "open -a 'Google Chrome' 'http://localhost:4000'; tychus 'PORT=3030 npm start >&2' -a 3030 -x public,data"
+    "start": "PORT=3030 node server.js"
   },
   "repository": {
     "type": "git",
@@ -24,9 +22,6 @@
     "url": "https://github.com/courajs/recurse-docs/issues"
   },
   "homepage": "https://github.com/courajs/recurse-docs#readme",
-  "devDependencies": {
-    "rollup": "^1.16.2"
-  },
   "dependencies": {
     "canonicalize": "^1.0.1",
     "cookie-parser": "^1.4.4",
