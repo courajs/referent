@@ -1,0 +1,18 @@
+<div
+  id="modal-container"
+  class="fixed pin"
+>
+  <div
+    onclick={{@close}}
+    id="modal-backdrop"
+    class="absolute pin bg-blue-darker opacity-50"
+  ></div>
+  <div class="absolute-centered bg-white rounded w-modal max-h-modal">
+    {{yield}}
+  </div>
+</div>
+
+<Hotkeys
+  @priority=10
+  @handlers={{this.hotkeys}}
+/>

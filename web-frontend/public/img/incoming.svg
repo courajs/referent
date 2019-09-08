@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="311px" height="254px" viewBox="0 0 311 254" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>Incoming</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Incoming" sketch:type="MSLayerGroup" transform="translate(4.000000, 3.000000)">
+            <path d="M5,0 C5,0 95,124 291,124" id="Path-1" stroke="#979797" stroke-width="8" sketch:type="MSShapeGroup"></path>
+            <path d="M5,124 C5,124 95,248 291,248" id="Path-1" stroke="#979797" stroke-width="8" sketch:type="MSShapeGroup" transform="translate(148.000000, 186.000000) scale(1, -1) translate(-148.000000, -186.000000) "></path>
+            <path d="M0,124 L290,124" id="Line" stroke="#979797" stroke-width="8" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            <polygon id="Triangle-1" fill="#979797" sketch:type="MSShapeGroup" transform="translate(268.000000, 123.500000) rotate(-270.000000) translate(-268.000000, -123.500000) " points="268 85 311 162 225 162 "></polygon>
+        </g>
+    </g>
+</svg>

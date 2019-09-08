@@ -1,0 +1,69 @@
+<div class="flex justify-between p-4">
+  <img src="/img/incoming.svg" class="h-16 w-16"> 
+  <div class="flex-1 px-4">
+    <button onclick={{perform this.promptAddIncoming}} class="w-8 h-8 mb-4 border rounded shadow active:shadow-inner active:bg-grey-lighter">+</button>
+    <ul class="list-reset">
+      {{#each this.incoming as |link|}}
+        <li>
+          <button onclick={{bind this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
+          {{link-to link.title.value 'page' link.page_uuid}}
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  <div class="flex-1 px-4 text-right">
+    <button onclick={{perform this.promptAddOutgoing}} class="w-8 h-8 mb-4 border rounded shadow active:shadow-inner active:bg-grey-lighter">+</button>
+    <ul class="list-reset">
+      {{#each this.outgoing as |link|}}
+        <li>
+          {{link-to link.title.value 'page' link.page_uuid}}
+          <button onclick={{bind this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  <img src="/img/outgoing.svg" class="h-16 w-16"> 
+</div>
+
+<div class="m-4">
+  <label for="title" class="block text-grey-darker text-sm mb-2">
+    Title
+  </label>
+  <LiveInput
+    @sequence={{this.model.title}}
+    placeholder="Untitled"
+    class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" />
+</div>
+<div class="m-4">
+  <LiveTextarea
+    @sequence={{this.model.body}}
+    placeholder="Blah blee bloop"
+    rows="30"
+    class="w-full shadow-inner p-4 border"
+  />
+</div>
+
+{{#if showModal}}
+  <Modal @close={{bind this.close}}>
+    <Typeahead
+      @choose={{bind this._modalChoice}}
+      @options={{this.modalOptions}}
+      @path={{this.modalPath}}
+      @placeholder={{this.modalLabel}}
+      @showCreateOption={{this.modalShowCreateOption}}
+    />
+  </Modal>
+{{/if}}
+
+<Hotkeys
+  @priority=1
+  @handlers={{this.hotkeys}}
+/>
+
+<br>
+<button
+  onclick={{perform destroyPage this.model.uuid}}
+  class="bg-red hover:bg-blue-dark text-white py-2 px-4 rounded mx-auto"
+>
+  Delete
+</button>

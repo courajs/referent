@@ -1,0 +1,27 @@
+<div class="m-4">
+  <input
+    {{did-insert this.focusEl}}
+    oninput={{action this.updateSearch value="target.value"}}
+    placeholder={{@placeholder}}
+    class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" />
+  <ul class="list-reset bg-grey-lighter p-4">
+    {{#each this.results key="id" as |item index|}}
+      <li
+        onmouseover={{action (mut this.choice) index}}
+        onclick={{action @choose item this.search}}
+        class="p-1 {{if (eq index this.choice) "bg-grey-light"}}"
+      >
+        {{#if (eq item this.CREATE)}}
+          Create "{{this.search}}"...
+        {{else}}
+          {{if @path (get item @path) item}}
+        {{/if}}
+      </li>
+    {{/each}}
+  </ul>
+</div>
+
+<Hotkeys
+  @priority=1
+  @handlers={{this.hotkeys}}
+/>

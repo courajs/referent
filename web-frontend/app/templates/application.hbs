@@ -1,0 +1,37 @@
+{{#if (not (eq this.auth.authState 'authed'))}}
+  Loading...
+{{else}}
+  <div class="flex items-stretch h-screen">
+    <Sidebar class="flex-none border w-64" />
+    <div class="flex-1 border">
+      {{outlet}}
+    </div>
+    {{from-elsewhere name="modal-outlet"}}
+
+    {{#if (eq this.environment 'production')}}
+      <div class="fixed pin-t w-24 bg-blue-lighter text-center" style="left: 50%">
+        {{this.environment}}
+      </div>
+    {{else}}
+      <div class="fixed pin-t w-24 bg-red-lighter text-center" style="left: 50%">
+        {{this.environment}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{#if this.showModal}}
+    <Modal @close={{action (mut this.showModal) false}}>
+      <Typeahead
+        @choose={{bind this.goToPage}}
+        @options={{this.graph.pages}}
+        @path="title.value"
+        @placeholder="Go to page..."
+      />
+    </Modal>
+  {{/if}}
+
+  <Hotkeys
+    @priority=0
+    @handlers={{this.hotkeys}}
+  />
+{{/if}}

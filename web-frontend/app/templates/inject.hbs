@@ -1,0 +1,14 @@
+<form onsubmit={{action this.go}} class="m-4">
+  {{#each-in shortcuts as |label text|}}
+    <button onclick={{action this.setTo text}} class="border rounded">{{label}}</button>
+  {{/each-in}}
+  <br>
+  <label>Collection name: {{input class="border rounded" value=this.collectionName input=(action (mut this.submitted) false)}}</label>
+  <br>
+  <label>
+    data to insert:<br>
+    {{textarea input=(action (mut this.submitted) false) rows=20 cols=30 class="resize border rounded" value=this.valueString}}
+  </label>
+  <br>
+  <input class="border rounded" type="submit" disabled={{this.submitted}}>
+</form>

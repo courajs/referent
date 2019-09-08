@@ -1,0 +1,38 @@
+{
+  "name": "recurse-docs",
+  "private": true,
+  "version": "0.0.1",
+  "description": "An offline-first, collaborative documents app",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "start": "node server.js",
+    "watch": "open -a 'Google Chrome' 'http://localhost:4000'; tychus 'PORT=3030 npm start >&2' -a 3030 -x public,data"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/courajs/recurse-docs.git"
+  },
+  "keywords": [
+    "crdt",
+    "ordt",
+    "offline"
+  ],
+  "author": "Aaron Sikes",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/courajs/recurse-docs/issues"
+  },
+  "homepage": "https://github.com/courajs/recurse-docs#readme",
+  "devDependencies": {
+    "rollup": "^1.16.2"
+  },
+  "dependencies": {
+    "canonicalize": "^1.0.1",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0",
+    "sqlite3": "^4.0.9"
+  }
+}

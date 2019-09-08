@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="333px" height="303px" viewBox="0 0 333 303" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>Outgoing</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Outgoing" sketch:type="MSLayerGroup" transform="translate(3.000000, -30.000000)">
+            <path d="M0,186 C0,186 90,310 286,310" id="Path-1" stroke="#979797" stroke-width="8" sketch:type="MSShapeGroup" transform="translate(143.000000, 248.000000) rotate(180.000000) translate(-143.000000, -248.000000) "></path>
+            <path d="M0,62 C0,62 90,186 286,186" id="Path-1" stroke="#979797" stroke-width="8" sketch:type="MSShapeGroup" transform="translate(143.000000, 124.000000) scale(1, -1) rotate(180.000000) translate(-143.000000, -124.000000) "></path>
+            <path d="M1,186 L291,186" id="Line" stroke="#979797" stroke-width="8" stroke-linecap="square" sketch:type="MSShapeGroup" transform="translate(146.000000, 186.000000) rotate(180.000000) translate(-146.000000, -186.000000) "></path>
+            <polygon id="Triangle-1" fill="#979797" sketch:type="MSShapeGroup" transform="translate(291.500000, 186.000000) rotate(-270.000000) translate(-291.500000, -186.000000) " points="291.5 147.5 334.5 224.5 248.5 224.5 "></polygon>
+            <polygon id="Triangle-1-Copy" fill="#979797" sketch:type="MSShapeGroup" transform="translate(288.500000, 58.000000) rotate(-315.000000) translate(-288.500000, -58.000000) " points="288.5 19.5 331.5 96.5 245.5 96.5 "></polygon>
+            <polygon id="Triangle-1-Copy" fill="#979797" sketch:type="MSShapeGroup" transform="translate(285.629203, 305.629203) rotate(-225.000000) translate(-285.629203, -305.629203) " points="285.629203 267.129203 328.629203 344.129203 242.629203 344.129203 "></polygon>
+        </g>
+    </g>
+</svg>
