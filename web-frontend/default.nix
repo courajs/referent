@@ -17,7 +17,7 @@ derivation rec {
     )
   ./.;
 
-  node_modules = import ./deps.nix;
+  node_modules = import ../yarn-deps.nix ./package.json ./yarn.lock;
   node = nodejs-12_x;
 
   PATH = "${coreutils}/bin:${bash}/bin:${node}/bin";
