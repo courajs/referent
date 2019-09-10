@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var canonicalize = require('canonicalize');
 
 var sqlite3 = require('sqlite3').verbose();
@@ -10,6 +11,13 @@ var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+
+var dbFile = process.argv[2] || '/var/referent/sqlite.db';
+var exists = fs.existsSync(dbFile);
+fs.mkdirSync(path.dirname(dbFile), {recursive: true});
+var db = new sqlite3.Database(dbFile);
+
+
 app.use(express.static('public'));
 
 app.get('/', function(request, response) {
@@ -19,9 +27,6 @@ app.get('/doc/:doc_id', function(request, response) {
   response.sendFile(__dirname + '/public/index.html');
 });
 
-var dbFile = './data/sqlite.db';
-var exists = fs.existsSync(dbFile);
-var db = new sqlite3.Database(dbFile);
 
 if (!exists) {
   db.serialize(function(){

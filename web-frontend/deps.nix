@@ -1,1 +1,0 @@
-import ../yarn-deps.nix ./.

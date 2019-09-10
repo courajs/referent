@@ -10,6 +10,7 @@
       [ # Include the results of the hardware scan.
         ./vultr-hardware-configuration.nix
         ./serve-frontend.nix
+        ./run-sync-server.nix
       ];
 
     # Use the GRUB 2 boot loader.
@@ -41,7 +42,7 @@
     # List packages installed in system profile. To search, run:
     # $ nix search wget
     environment.systemPackages = with pkgs; [
-      wget vim curl
+      wget vim curl git nodejs-10_x
     ];
 
     # Some programs need SUID wrappers, can be configured further or are
@@ -60,25 +61,6 @@
     # networking.firewall.allowedUDPPorts = [ ... ];
     # Or disable the firewall altogether.
     # networking.firewall.enable = false;
-
-    # Enable CUPS to print documents.
-    # services.printing.enable = true;
-
-    # Enable sound.
-    # sound.enable = true;
-    # hardware.pulseaudio.enable = true;
-
-    # Enable the X11 windowing system.
-    # services.xserver.enable = true;
-    # services.xserver.layout = "us";
-    # services.xserver.xkbOptions = "eurosign:e";
-
-    # Enable touchpad support.
-    # services.xserver.libinput.enable = true;
-
-    # Enable the KDE Desktop Environment.
-    # services.xserver.displayManager.sddm.enable = true;
-    # services.xserver.desktopManager.plasma5.enable = true;
 
     users.mutableUsers = false;
     users.users.root.openssh.authorizedKeys.keys = [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnGeYxCWyKsMST5ce4wOsr+tIhjwCBfpzfJmGPHfXoYuXoQ774k7arOosLBh1yYQMj5HhHf3qHSn7lPRvjC8H/MfN9v3zOsXfIv8w3ozXhMuASouh27t120LYVrjr4U/OTpsWOPLdBsDDS6FMQrJCOQFjgAs5YmVuxBTq1g/iyKkeFlunIc8qWPD8JvFnUulrnPCyV9KHjLzkOrjxt2B3PbYbY9BIXdhMo0WN0S5itWo+6pbLtgk86KgpVzCG8Dk8Ua+EYhkDkOw/gqyMe75Z9NPmn9jTeqRHtlV6wKldRomkttsXlFbMLuui8cuOhkqyoFGyZE+gYYTwwHohwMD+v" ];
