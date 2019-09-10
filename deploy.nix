@@ -1,5 +1,6 @@
 {
   network.description = "Connote server";
+  network.enableRollback = true;
 
   server = 
   { config, pkgs, ... }:
@@ -8,6 +9,7 @@
     imports =
       [ # Include the results of the hardware scan.
         ./vultr-hardware-configuration.nix
+        ./serve-frontend.nix
       ];
 
     # Use the GRUB 2 boot loader.
