@@ -13,6 +13,18 @@
         ./run-sync-server.nix
       ];
 
+    services.nginx = {
+      enable = true;
+      recommendedGzipSettings = true;
+      recommendedOptimisation = true;
+      recommendedProxySettings = true;
+      recommendedTlsSettings = true;
+      # virtualHosts."graph.recurse.com" = {
+      #   addSSL = true;
+      #   enableACME = true;
+      # }
+    };
+
     # Use the GRUB 2 boot loader.
     boot.loader.grub.enable = true;
     boot.loader.grub.version = 2;
