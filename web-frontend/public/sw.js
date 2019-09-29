@@ -136,7 +136,7 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
   self.pock = Promise.all([self.authed, self.inited])
     .then(function() {
       console.log('init socket!!');
-      let socket = io('http://localhost:3030', {jsonp: false});
+      let socket = io('/sync', {jsonp: false});
       self.socket = socket;
       return socket;
     });
@@ -271,7 +271,7 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
     console.log('authing');
     let db = await self.dbp;
     db.transaction('meta','readwrite').objectStore('meta').put(name, 'client_id');
-    await fetch('http://localhost:3030/auth',{method: 'POST', mode:'no-cors',credentials:'include', body:name});
+    await fetch('/sync/auth',{method: 'POST', mode:'no-cors',credentials:'include', body:name});
     resolveAuth(name);
     let socket = await self.pock;
     socket.disconnect();
