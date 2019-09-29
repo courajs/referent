@@ -14,6 +14,10 @@
   };
 
   services.nginx.virtualHosts."graph.recurse.com".locations = {
+    "= /sync" = {
+      proxyWebsockets = true;
+      proxyPass = "http://localhost:3030/";
+    };
     "/sync/" = {
       proxyWebsockets = true;
       proxyPass = "http://localhost:3030/";
