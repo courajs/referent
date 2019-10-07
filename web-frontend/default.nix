@@ -19,6 +19,7 @@ derivation rec {
   node_modules = import ../yarn-deps.nix ./package.json ./yarn.lock;
   node = nodejs-10_x;
   npm = "${node}/bin/npm";
+  sed = "${gnused}/bin/sed";
 
   PATH = "${coreutils}/bin:${bash}/bin:${node}/bin";
   builder = "${bash}/bin/bash";

@@ -1,6 +1,20 @@
 importScripts('/v/unpkg.com/socket.io-client@2.2.0/dist/socket.io.slim.dev.js');
 importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
 
+let io_host, io_path, auth_endpoint;
+// This is flipped true by the nix build
+const PROD = false;
+
+if (PROD) {
+  io_host = "/";
+  io_path = "/sync/socket.io";
+  auth_endpoint = "/sync/auth"
+} else {
+  io_host = "http://localhost:3030";
+  io_path = "/socket.io";
+  auth_endpoint = "http://localhost:3030/auth";
+}
+
 (function (idb, io) {
   'use strict';
 
@@ -136,7 +150,7 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
   self.pock = Promise.all([self.authed, self.inited])
     .then(function() {
       console.log('init socket!!');
-      let socket = io('/', {jsonp: false, path: '/sync/socket.io', transports: ['websocket', 'polling']});
+      let socket = io(io_host, {jsonp: false, path: io_path, transports: ['websocket', 'polling']});
       self.socket = socket;
       return socket;
     });
@@ -271,7 +285,7 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
     console.log('authing');
     let db = await self.dbp;
     db.transaction('meta','readwrite').objectStore('meta').put(name, 'client_id');
-    await fetch('/sync/auth',{method: 'POST', mode:'no-cors',credentials:'include', body:name});
+    await fetch(auth_endpoint ,{method: 'POST', mode:'no-cors',credentials:'include', body:name});
     resolveAuth(name);
     let socket = await self.pock;
     socket.disconnect();
