@@ -9,21 +9,9 @@
     imports =
       [ # Include the results of the hardware scan.
         ./vultr-hardware-configuration.nix
-        ./serve-frontend.nix
         ./run-sync-server.nix
+        ./serve-config.nix
       ];
-
-    services.nginx = {
-      enable = true;
-      recommendedGzipSettings = true;
-      recommendedOptimisation = true;
-      recommendedProxySettings = true;
-      recommendedTlsSettings = true;
-      # virtualHosts."graph.recurse.com" = {
-      #   addSSL = true;
-      #   enableACME = true;
-      # }
-    };
 
     # Use the GRUB 2 boot loader.
     boot.loader.grub.enable = true;

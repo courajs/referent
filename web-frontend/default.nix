@@ -5,20 +5,20 @@ derivation rec {
 
   src = builtins.filterSource
     (path: type:
-      let filename = baseNameOf path; in
-      !(
-        filename == "result"       && type == "symlink"   ||
-        filename == "node_modules" && type == "directory" ||
-        filename == "dist"         && type == "directory" ||
-        filename == "tests"        && type == "directory" ||
-        filename == "tmp"          && type == "directory" ||
-        filename == ".git"         && type == "directory"
-      )
+      (!(
+        path == builtins.toString ./result ||
+        path == builtins.toString ./node_modules ||
+        path == builtins.toString ./dist ||
+        path == builtins.toString ./tests ||
+        path == builtins.toString ./tmp ||
+        path == builtins.toString ./.git
+      ))
     )
   ./.;
 
   node_modules = import ../yarn-deps.nix ./package.json ./yarn.lock;
-  node = nodejs-12_x;
+  node = nodejs-10_x;
+  npm = "${node}/bin/npm";
 
   PATH = "${coreutils}/bin:${bash}/bin:${node}/bin";
   builder = "${bash}/bin/bash";

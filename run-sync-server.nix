@@ -12,15 +12,4 @@
       ExecStart = "${pkgs.nodejs-10_x}/bin/node /var/referent/server/server.js /var/referent.db";
     };
   };
-
-  services.nginx.virtualHosts."graph.recurse.com".locations = {
-    "= /sync" = {
-      proxyWebsockets = true;
-      proxyPass = "http://localhost:3030/";
-    };
-    "/sync/" = {
-      proxyWebsockets = true;
-      proxyPass = "http://localhost:3030/";
-    };
-  };
 }

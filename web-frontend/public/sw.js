@@ -136,7 +136,7 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
   self.pock = Promise.all([self.authed, self.inited])
     .then(function() {
       console.log('init socket!!');
-      let socket = io('/sync', {jsonp: false});
+      let socket = io('/', {jsonp: false, path: '/sync/socket.io', transports: ['websocket', 'polling']});
       self.socket = socket;
       return socket;
     });
