@@ -5,7 +5,7 @@
   "description": "An offline-first, collaborative documents app",
   "main": "index.js",
   "scripts": {
-    "start": "PORT=3030 node server.js"
+    "start": "PORT=3030 node server.js data/sqlite.db"
   },
   "repository": {
     "type": "git",

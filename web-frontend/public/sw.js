@@ -10,9 +10,9 @@ if (PROD) {
   io_path = "/sync/socket.io";
   auth_endpoint = "/sync/auth"
 } else {
-  io_host = "http://localhost:3030";
+  io_host = "/";
   io_path = "/socket.io";
-  auth_endpoint = "http://localhost:3030/auth";
+  auth_endpoint = "/auth";
 }
 
 (function (idb, io) {
