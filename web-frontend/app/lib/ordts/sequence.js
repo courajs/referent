@@ -90,6 +90,10 @@ export class Sequence {
     return this.indexedEvaluate().value;
   }
 
+  get value() {
+    return this.evaluate();
+  }
+
   indexedEvaluate() {
     let result = [];
     for (let atom of this.atoms) {

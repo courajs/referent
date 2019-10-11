@@ -2,7 +2,7 @@ import Service, {inject as service} from '@ember/service';
 import Evented from '@ember/object/evented';
 import {task} from 'ember-concurrency';
 import {Observable,Subject,BehaviorSubject,of,merge} from 'rxjs';
-import {flatMap,map,reduce} from 'rxjs/operators';
+import {flatMap,map,reduce,multicast,refCount} from 'rxjs/operators';
 import {EquivMap} from '@thi.ng/associative';
 import {keepLatest} from 'nomicon/lib/concurrency';
 import {CatchUpSubject,TrackedBehavior} from 'nomicon/lib/observables';
@@ -21,12 +21,12 @@ window.operators = operators;
 
 
 
-window.emitter = new Subject();
-let catted = emitter.pipe(
-    operators.scan((all,these) => all.concat(these))
-);
-window.result = new BehaviorSubject([]);
-catted.subscribe(result);
+// window.emitter = new Subject();
+// let catted = emitter.pipe(
+//     operators.scan((all,these) => all.concat(these))
+// );
+// window.result = new BehaviorSubject([]);
+// catted.subscribe(result);
 
 
 function enqueue(f) {
@@ -68,10 +68,6 @@ function fetchNewInResponse(db, collectionId) {
 
 
 
-
-
-let stop = false;
-
 export default class Sync extends Service {
   @service auth;
   @service idb;
@@ -86,7 +82,6 @@ export default class Sync extends Service {
     window.syncService = this;
     this.swNotifier.subscribe(this.sw.outgoing);
     this.sw.on('update').subscribe(this.localNotifier);
-    setTimeout(()=>stop=true,5000);
   }
 
   async ordtFromCollection(ordt, id) {
@@ -97,7 +92,7 @@ export default class Sync extends Service {
     this.sw.send('ask');
 
     // of(0) primes it with an initial fetch
-    return merge(this.localNotifier, this.swNotifier, of(0)).pipe(
+    return merge(this.localNotifier, of(0)).pipe(
         fetchNewInResponse(db, id),
         map(update => {
           ordt.mergeAtoms(update);
@@ -107,11 +102,30 @@ export default class Sync extends Service {
   }
 
   async sequence(id) {
+    let seq = this._id_map.get(id);
+    if (seq) {
+      return seq;
+    }
+
     await this.auth.awaitAuth;
-    return this.ordtFromCollection(
-        new Sequence(this.auth.clientId, []),
-        id
+    let db = await this.idb.db;
+    await ensureClockForCollection(db, id);
+    console.log('instantiating an ordt');
+    this.sw.send('ask');
+
+    let ordt = new Sequence(this.auth.clientId);
+
+    seq = merge(this.localNotifier, of(0)).pipe(
+        fetchNewInResponse(db, id),
+        map(update => {
+          ordt.mergeAtoms(update);
+          return ordt;
+        }),
+        multicast(() => new BehaviorSubject(ordt)),
+        refCount(),
     );
+    this._id_map.set(id, seq);
+    return seq;
   }
 
   async graph(id) {
@@ -125,7 +139,17 @@ export default class Sync extends Service {
   async liveCollection(id) {
     let db = await this.idb.db;
 
+function getOrCreate(map, id, creator) {
+  let val = map.get(id);
+  if (!val) {
+    val = creator();
+    map.set(id, val);
+  }
+  return val;
+}
+
     return getOrCreate(this._id_map, id, ()=>{
+      console.log('creating for', id);
       let collection = new CollectionConnection(db, id);
       collection.notifications.subscribe(this.swNotifier);
       ensureClockForCollection(db, id)
@@ -140,8 +164,8 @@ export default class Sync extends Service {
 
   async write(collection, values) {
     await writeToCollection(await this.idb.db, collection, values);
-    let col = await this.liveCollection(collection);
-    col.update();
+    // let col = await this.liveCollection(collection);
+    // col.update();
     this.swNotifier.next('update');
     this.localNotifier.next();
   }
@@ -154,14 +178,6 @@ export default class Sync extends Service {
   //*/
 }
 
-function getOrCreate(map, id, creator) {
-  let val = map.get(id);
-  if (!val) {
-    val = creator();
-    map.set(id, val);
-  }
-  return val;
-}
 
 class CollectionConnection {
   db; id; notify;

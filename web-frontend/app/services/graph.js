@@ -4,6 +4,10 @@ import {map,concatMap} from 'rxjs/operators';
 import LiveGraph from 'nomicon/lib/live/graph';
 import {TrackedBehavior} from 'nomicon/lib/observables';
 
+import {EquivMap} from '@thi.ng/associative';
+
+window.EquivMap = EquivMap;
+
 export default class GraphService extends Service {
   @service sync;
   @service auth;
@@ -26,8 +30,8 @@ export default class GraphService extends Service {
     let bodyId = ['page',uuid,'body'];
 
     let [title,body] = await Promise.all([
-        this.trackedSequence(titleId),
-        this.trackedSequence(bodyId),
+        this.sync.sequence(titleId),
+        this.sync.sequence(bodyId),
     ]);
 
     return {

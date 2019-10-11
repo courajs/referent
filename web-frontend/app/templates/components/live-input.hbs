@@ -1,5 +1,7 @@
-<input
-  value={{this.value}}
-  oninput={{action this.update}}
-  ...attributes
-/>
+{{#let (subscribe @sequence.seq) as |latest|}}
+  <input
+    value={{latest.value}}
+    oninput={{action this.update latest}}
+    ...attributes
+  />
+{{/let}}
