@@ -22,9 +22,6 @@ export default Controller.extend({
   graph: inject(),
   sync: inject(),
 
-  page: alias('model.page'),
-  title: alias('model.titleSequence'),
-
   //   ...MODAL_DEFAULTS,
   //   ^ this breaks an ESLint rule
   //   (not FAILS it, BREAKS it -- it errors out. Not set up to

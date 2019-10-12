@@ -1,4 +1,0 @@
-Before deploy, rebase the deploy branch onto your release branch, and then deploy that.
-Then, you won't be comitting and uncomitting the prod values over and over
-
-

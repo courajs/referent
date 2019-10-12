@@ -27,10 +27,4 @@ export default Controller.extend({
     this.transitionToRoute('page', p.uuid);
     this.set('showModal', false);
   },
-
-  authenticate(e) {
-    e.preventDefault();
-    this.auth.authenticateAs(this.clientId);
-    this.clientId = '';
-  },
 });

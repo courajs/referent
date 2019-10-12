@@ -4,8 +4,6 @@ import {task} from 'ember-concurrency';
 import {Observable,Subject,BehaviorSubject,of,from,merge} from 'rxjs';
 import {map,flatMap,mergeMap,reduce,multicast,refCount,publishBehavior} from 'rxjs/operators';
 import {EquivMap} from '@thi.ng/associative';
-import {keepLatest} from 'nomicon/lib/concurrency';
-import {CatchUpSubject,TrackedBehavior} from 'nomicon/lib/observables';
 import Sequence from 'nomicon/lib/ordts/sequence';
 import Graph from 'nomicon/lib/ordts/graph';
 import {
@@ -66,8 +64,6 @@ function fetchNewInResponse(db, collectionId) {
 
 
 
-
-
 export default class Sync extends Service {
   @service auth;
   @service idb;
@@ -84,23 +80,6 @@ export default class Sync extends Service {
     this.sw.on('update').subscribe(this.localNotifier);
   }
 
-  async ordtFromCollection(ordt, id) {
-    let db = await this.idb.db;
-
-    await ensureClockForCollection(db, id);
-    console.log('ordt');
-    this.sw.send('ask');
-
-    // of(0) primes it with an initial fetch
-    return merge(this.localNotifier, of(0)).pipe(
-        fetchNewInResponse(db, id),
-        map(update => {
-          ordt.mergeAtoms(update);
-          return ordt;
-        })
-    );
-  }
-
   async prepare(id) {
     await this.auth.awaitAuth;
     let db = await this.idb.db;
@@ -114,8 +93,6 @@ export default class Sync extends Service {
     if (seq) {
       return seq;
     }
-
-    console.log('making', id, 'initially');
 
     // HACK - we won't have clientId until we've awaited
     // this.auth.awaitAuth, so we just poke it in later,
@@ -213,36 +190,9 @@ export default class Sync extends Service {
     return this._graph;
   }
 
-  async liveCollection(id) {
-    let db = await this.idb.db;
-
-function getOrCreate(map, id, creator) {
-  let val = map.get(id);
-  if (!val) {
-    val = creator();
-    map.set(id, val);
-  }
-  return val;
-}
-
-    return getOrCreate(this._id_map, id, ()=>{
-      console.log('creating for', id);
-      let collection = new CollectionConnection(db, id);
-      collection.notifications.subscribe(this.swNotifier);
-      ensureClockForCollection(db, id)
-        .then(() => {
-          this.sw.on('update').forEach(()=>collection.update());
-          this.sw.send('ask');
-          collection.update();
-        });
-      return collection;
-    });
-  }
 
   async write(collection, values) {
     await writeToCollection(await this.idb.db, collection, values);
-    // let col = await this.liveCollection(collection);
-    // col.update();
     this.swNotifier.next('update');
     this.localNotifier.next();
   }
@@ -253,40 +203,4 @@ function getOrCreate(map, id, creator) {
     this.sw.send('update');
   }
   //*/
-}
-
-
-class CollectionConnection {
-  db; id; notify;
-  values = new CatchUpSubject();
-  notifications = new Subject();
-  clock = {local:0,remote:0};
-
-  constructor(db, id) {
-    this.db = db;
-    this.id = id;
-  }
-  
-  @keepLatest
-  async update() {
-    let {
-      clock,
-      values
-    } = await getFromCollection(this.db, this.id, this.clock);
-    this.clock = clock;
-    if (values.length) {
-      this.values.next(values);
-    }
-  }
-
-  async write(values) {
-    if (!Array.isArray(values)) { throw new Error('pass an array'); }
-    await writeToCollection(this.db, this.id, values);
-    this.notifications.next('update');
-    return this.update();
-  }
-
-  subscribe(observer) {
-    return this.values.subscribe(observer);
-  }
 }

@@ -1,8 +1,6 @@
 import Service, {inject as service} from '@ember/service';
 import {tracked} from '@glimmer/tracking';
 import {map,concatMap,publishBehavior} from 'rxjs/operators';
-import LiveGraph from 'nomicon/lib/live/graph';
-import {TrackedBehavior} from 'nomicon/lib/observables';
 
 import {EquivMap} from '@thi.ng/associative';
 
@@ -36,24 +34,6 @@ export default class GraphService extends Service {
         seq: this.sync.sequence(bodyId),
       },
     };
-  }
-
-  async titleForPage(uuid) {
-    let id = ['page',uuid,'title'];
-    return {
-      id: ['page',uuid,'title'],
-      seq: await this.trackedSequence(id),
-    }
-  }
-
-  async trackedSequence(id) {
-    return await new TrackedBehavior(await this.sync.sequence(id)).initial;
-  }
-
-  async trackedReadOnlySequence(id) {
-    let seq = await this.sync.sequence(id);
-    let mapper = map(seq => seq.evaluate());
-    return await new TrackedBehavior(mapper(seq)).initial;
   }
 
   async linksForPage(uuid) {
