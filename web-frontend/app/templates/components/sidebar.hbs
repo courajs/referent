@@ -1,16 +1,22 @@
 <div ...attributes>
-  {{#link-to 'new'}}
+  <LinkTo @route="new">
     <div class="text-center my-4">
       <button class="bg-blue hover:bg-blue-dark text-white py-2 px-4 rounded mx-auto">
         New page
       </button>
     </div>
-  {{/link-to}}
+  </LinkTo>
 
   <h2>Pages</h2>
   <ul class="mt-4 mb-12">
     {{#each (subscribe this.graph.pages) key="uuid" as |page|}}
-      <li>{{link-to (or (get (subscribe page.title) 'value') '<untitled>') 'page' page.uuid}}</li>
+      <li>
+        <LinkTo
+          @route="page"
+          @model={{page.uuid}}
+          style="white-space: pre-wrap;"
+        >{{or (get (subscribe page.title) 'value') '<untitled>'}}</LinkTo>
+      </li>
     {{else}}
       <p class="text-grey-darker">&lt;none&gt;</p>
     {{/each}}
