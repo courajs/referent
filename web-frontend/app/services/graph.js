@@ -121,10 +121,8 @@ export default class GraphService extends Service {
   }
 
   async delete(uuid) {
-    await this.auth.awaitAuth;
-    await this._graph.initial;
-    let atom = this._graph.value.delete(uuid);
-    await this.sync.write('graph', [atom]);
-    return;
+    let g = this.sync.graph.getSubject().value;
+    let atom = g.delete(uuid);
+    return this.sync.write('graph', [atom]);
   }
 }
