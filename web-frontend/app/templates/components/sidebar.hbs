@@ -15,7 +15,9 @@
           @route="page"
           @model={{page.uuid}}
           style="white-space: pre-wrap;"
-        >{{or (get (subscribe page.title) 'value') '<untitled>'}}</LinkTo>
+        >
+          {{~or (get (subscribe page.title) "value") "<untitled>"~}}
+        </LinkTo>
       </li>
     {{else}}
       <p class="text-grey-darker">&lt;none&gt;</p>

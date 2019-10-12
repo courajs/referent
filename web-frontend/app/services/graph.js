@@ -1,6 +1,5 @@
 import Service, {inject as service} from '@ember/service';
-import {tracked} from '@glimmer/tracking';
-import {map,concatMap,publishBehavior} from 'rxjs/operators';
+import {map,publishBehavior} from 'rxjs/operators';
 
 import {EquivMap} from '@thi.ng/associative';
 
@@ -10,11 +9,8 @@ export default class GraphService extends Service {
   @service sync;
   @service auth;
 
-  @tracked pages;
-
   init() {
     window.graphservice = this;
-    this.pages = this._pages();
   }
 
 
@@ -65,8 +61,11 @@ export default class GraphService extends Service {
     return links;
   }
 
-  _pages() {
-    let p = this.sync.graph.pipe(
+  get pages() {
+    if (this._pages) {
+      return this._pages;
+    }
+    this._pages = this.sync.graph.pipe(
         map(g => {
           return g.value.nodes.map(n => {
             return {
@@ -77,8 +76,8 @@ export default class GraphService extends Service {
         }),
         publishBehavior([]),
     );
-    p.connect();
-    return p;
+    this._pages.connect();
+    return this._pages;
   }
 
   // Mutations

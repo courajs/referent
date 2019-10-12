@@ -8,7 +8,7 @@
     {{did-insert this.focusEl}}
     oninput={{action this.updateSearch value="target.value"}}
     placeholder={{@placeholder}}
-    class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" />
+    class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" >
   <ul class="list-reset bg-grey-lighter p-4">
     {{#each this.results key="id" as |item index|}}
       <li
@@ -27,6 +27,6 @@
 </div>
 
 <Hotkeys
-  @priority=1
+  @priority={{1}}
   @handlers={{this.hotkeys}}
 />

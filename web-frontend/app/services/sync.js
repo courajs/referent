@@ -1,8 +1,6 @@
 import Service, {inject as service} from '@ember/service';
-import Evented from '@ember/object/evented';
-import {task} from 'ember-concurrency';
-import {Observable,Subject,BehaviorSubject,of,from,merge} from 'rxjs';
-import {map,flatMap,mergeMap,reduce,multicast,refCount,publishBehavior} from 'rxjs/operators';
+import {Subject,BehaviorSubject,of,from,merge} from 'rxjs';
+import {map,flatMap,mergeMap,multicast,refCount,publishBehavior} from 'rxjs/operators';
 import {EquivMap} from '@thi.ng/associative';
 import Sequence from 'nomicon/lib/ordts/sequence';
 import Graph from 'nomicon/lib/ordts/graph';

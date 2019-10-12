@@ -10,11 +10,12 @@ export default Component.extend({
   choice: 0,
   path: '',
   search: '',
-  empty: [],
+  empty: null,
   all: or('options', 'empty'),
   choose() {},
 
   init() {
+    this.empty = [];
     this._super(...arguments);
     this.set('keyboardActivated', true);
   },

@@ -1,4 +1,4 @@
-import Service, {inject} from '@ember/service';
+import Service from '@ember/service';
 import {Subject, fromEvent} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
@@ -7,7 +7,7 @@ if (!navigator.serviceWorker.controller) {
   setTimeout(()=>location.reload(), 500);
 }
 
-export const ready = navigator.serviceWorker.ready.then(function(reg) {
+export const ready = navigator.serviceWorker.ready.then(function(/*reg*/) {
   console.log('ready');
   let send = (kind,value) => {
     if (!navigator.serviceWorker.controller) {

@@ -1,7 +1,5 @@
 import Controller from '@ember/controller';
 import {inject} from '@ember/service';
-import {computed} from '@ember/object';
-import {alias} from '@ember/object/computed';
 import {task, taskGroup, waitForProperty} from 'ember-concurrency';
 import {take,last} from 'rxjs/operators';
 
@@ -28,7 +26,7 @@ export default Controller.extend({
   //   handle the spread operator apparently)
   showModal: false,
   modalLabel: '',
-  modalOptions: [],
+  modalOptions: null,
   modalPath: '',
   modalChoice: null,
   modalShowCreateOption: false,

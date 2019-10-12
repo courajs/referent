@@ -2,18 +2,18 @@ import Helper from '@ember/component/helper';
 import { next } from '@ember/runloop';
 
 export default class SubscribeHelper extends Helper {
-  _observer;
+  _observable;
   _subscription;
   _value;
 
-  compute([observer, name]) {
-    if (observer !== this._observer) {
+  compute([observable]) {
+    if (observable !== this._observable) {
       this._value = null;
       if (this._subscription) {
         this._subscription.unsubscribe();
       }
-      this._observer = observer;
-      this._subscription = observer.subscribe((val) => {
+      this._observable = observable;
+      this._subscription = observable.subscribe((val) => {
         this._value = val;
         // HACK / MISUNDERSTANDING / UPGRADE
         // I don't think I should need to bump this to the next loop...
@@ -32,7 +32,7 @@ export default class SubscribeHelper extends Helper {
 
   willDestroy() {
     this._subscription.unsubscribe();
-    this._observer = null;
+    this._observable = null;
     this._subscription = null;
     this._value = null;
   }

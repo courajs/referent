@@ -1,5 +1,5 @@
 <form onsubmit={{action this.go}} class="m-4">
-  {{#each-in shortcuts as |label text|}}
+  {{#each-in this.shortcuts as |label text|}}
     <button onclick={{action this.setTo text}} class="border rounded">{{label}}</button>
   {{/each-in}}
   <br>

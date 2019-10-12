@@ -1,5 +1,3 @@
-import {isFieldDescriptor} from 'nomicon/lib/decorators';
-
 // TODO: this doesn't really respect promises / async functions.
 // The first call will return the promise returned by the wrap function.
 // But the second call will immediately resolve. Instead it should coalesce

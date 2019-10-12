@@ -2,10 +2,10 @@ import {openDB, unwrap} from 'idb';
 
 export const DB_NAME = 'connote';
 export const DB_VERSION = 1;
-export async function upgrade(db, oldVersion, newVersion, tx) {
+export async function upgrade(db/*, oldVersion, newVersion, tx*/) {
   [].forEach.call(db.objectStoreNames, n => db.deleteObjectStore(n));
 
-  let meta = db.createObjectStore('meta');
+  db.createObjectStore('meta');
 
   let clocks = db.createObjectStore('clocks', {keyPath:['collection']});
   clocks.createIndex('uniq', ['collection'], {unique: true});

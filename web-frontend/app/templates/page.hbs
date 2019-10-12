@@ -1,6 +1,6 @@
 <div class="flex justify-between p-4">
-  <img src="/img/incoming.svg" class="h-16 w-16"> 
-  {{#let (subscribe model.links) as |links|}}
+  <img src="/img/incoming.svg" alt="incoming links" class="h-16 w-16"> 
+  {{#let (subscribe this.model.links) as |links|}}
     <div class="flex-1 px-4">
       <button onclick={{perform this.promptAddIncoming}} class="w-8 h-8 mb-4 border rounded shadow active:shadow-inner active:bg-grey-lighter">+</button>
       <ul class="list-reset">
@@ -11,7 +11,9 @@
               @route="page"
               @model={{link.page_uuid}}
               style="white-space: pre-wrap;"
-            >{{get (subscribe link.title) 'value'}}</LinkTo>
+            >
+              {{~get (subscribe link.title) "value"~}}
+            </LinkTo>
           </li>
         {{/each}}
       </ul>
@@ -25,7 +27,9 @@
               @route="page"
               @model={{link.page_uuid}}
               style="white-space: pre-wrap;"
-            >{{get (subscribe link.title) 'value'}}</LinkTo>
+            >
+              {{~get (subscribe link.title) "value"~}}
+            </LinkTo>
             <button onclick={{bind this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
           </li>
         {{/each}}
@@ -33,7 +37,7 @@
         
     </div>
   {{/let}}
-  <img src="/img/outgoing.svg" class="h-16 w-16"> 
+  <img src="/img/outgoing.svg" alt="outgoing links" class="h-16 w-16"> 
 </div>
 
 <div class="m-4">
@@ -54,7 +58,7 @@
   />
 </div>
 
-{{#if showModal}}
+{{#if this.showModal}}
   <Modal @close={{bind this.close}}>
     <Typeahead
       @choose={{bind this._modalChoice}}
@@ -67,13 +71,13 @@
 {{/if}}
 
 <Hotkeys
-  @priority=1
+  @priority={{1}}
   @handlers={{this.hotkeys}}
 />
 
 <br>
 <button
-  onclick={{perform destroyPage this.model.uuid}}
+  onclick={{perform this.destroyPage this.model.uuid}}
   class="bg-red hover:bg-blue-dark text-white py-2 px-4 rounded mx-auto"
 >
   Delete

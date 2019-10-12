@@ -1,4 +1,4 @@
-{{#if (not (eq this.auth.authState 'authed'))}}
+{{#if (not (eq this.auth.authState "authed"))}}
   Loading...
 {{else}}
   <div class="flex items-stretch h-screen">
@@ -8,7 +8,7 @@
     </div>
     {{from-elsewhere name="modal-outlet"}}
 
-    {{#if (eq this.environment 'production')}}
+    {{#if (eq this.environment "production")}}
       <div class="fixed pin-t w-24 bg-blue-lighter text-center" style="left: 50%">
         {{this.environment}}
       </div>
@@ -32,7 +32,7 @@
   {{/if}}
 
   <Hotkeys
-    @priority=0
+    @priority={{0}}
     @handlers={{this.hotkeys}}
   />
 {{/if}}
