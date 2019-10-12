@@ -1,3 +1,8 @@
+<style>
+  .typeahead-choice::after {
+    content: '&nbsp;';
+  }
+</style>
 <div class="m-4">
   <input
     {{did-insert this.focusEl}}
@@ -9,12 +14,12 @@
       <li
         onmouseover={{action (mut this.choice) index}}
         onclick={{action @choose item this.search}}
-        class="p-1 {{if (eq index this.choice) "bg-grey-light"}}"
+        class="typeahead-choice p-1 {{if (eq index this.choice) "bg-grey-light"}}"
       >
         {{#if (eq item this.CREATE)}}
           Create "{{this.search}}"...
         {{else}}
-          {{or (if @path (get item @path) item) this.BLANK}}
+          {{if @path (get item @path) item}}
         {{/if}}
       </li>
     {{/each}}

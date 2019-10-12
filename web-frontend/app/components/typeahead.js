@@ -1,7 +1,6 @@
 import Component from '@ember/component';
 import {get, computed} from '@ember/object';
 import {or} from '@ember/object/computed';
-import { htmlSafe } from '@ember/template';
 
 import {bound} from 'nomicon/lib/hotkeys';
 import {CREATE} from 'nomicon/lib/typeahead';
@@ -12,7 +11,6 @@ export default Component.extend({
   path: '',
   search: '',
   empty: [],
-  BLANK: htmlSafe('&nbsp;'),
   all: or('options', 'empty'),
   choose() {},
 
