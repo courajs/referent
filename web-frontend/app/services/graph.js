@@ -1,6 +1,6 @@
 import Service, {inject as service} from '@ember/service';
 import {tracked} from '@glimmer/tracking';
-import {map,concatMap} from 'rxjs/operators';
+import {map,concatMap,publishBehavior} from 'rxjs/operators';
 import LiveGraph from 'nomicon/lib/live/graph';
 import {TrackedBehavior} from 'nomicon/lib/observables';
 
@@ -12,14 +12,11 @@ export default class GraphService extends Service {
   @service sync;
   @service auth;
 
-  @tracked _graph;
-  @tracked _pages;
+  @tracked pages;
 
-  async init() {
-    await this.auth.awaitAuth;
+  init() {
     window.graphservice = this;
-    this._graph = new TrackedBehavior(await this.sync.graph('graph'));
-    this._pages = await this._allPages();
+    this.pages = this._pages();
   }
 
 
@@ -60,8 +57,7 @@ export default class GraphService extends Service {
   }
 
   async linksForPage(uuid) {
-    let graph = await this.sync.graph('graph');
-    let links = graph.pipe(
+    let links = this.sync.graph.pipe(
         concatMap(async g => {
           let {incoming, outgoing} = g.evaluate();
           incoming = incoming[uuid] || [];
@@ -89,32 +85,22 @@ export default class GraphService extends Service {
     return links;
   }
 
-  async _allPages() {
-    let graph = await this.sync.graph('graph');
-    let links = graph.pipe(
-        concatMap(async g => {
-          let {nodes} = g.evaluate();
-          return Promise.all(
-              nodes.map(async n => {
-                return {
-                  uuid: n,
-                  title: await this.trackedReadOnlySequence(['page',n,'title']),
-                };
-              })
-          );
+  _pages() {
+    let p = this.sync.graph.pipe(
+        map(g => {
+          window.garph = g;
+          return g.value.nodes.map(n => {
+            return {
+              uuid: n,
+              title: this.sync.sequence(['page',n,'title']),
+            };
+          });
         }),
+        publishBehavior([]),
     );
-    return await new TrackedBehavior(links).initial;
+    p.connect();
+    return p;
   }
-
-  get pages() {
-    if (this._pages) {
-      return this._pages.value;
-    } else {
-      return [];
-    }
-  }
-
 
   // Mutations
 

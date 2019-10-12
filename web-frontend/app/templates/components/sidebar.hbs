@@ -7,39 +7,10 @@
     </div>
   {{/link-to}}
 
-  {{!--
-  <h2>Homepages</h2>
-  <ul class="mt-4 mb-12">
-    {{#each this.data.homes key="id" as |page|}}
-      <li>{{link-to (or page.title "<untitled>") 'page' page.id}}</li>
-    {{else}}
-      <p class="text-grey-darker">&lt;none&gt;</p>
-    {{/each}}
-  </ul>
-
-  <h2>Orphans</h2>
-  <ul class="mt-4 mb-12">
-    {{#each this.data.orphans key="id" as |page|}}
-      <li>{{link-to (or page.title "<untitled>") 'page' page.id}}</li>
-    {{else}}
-      <p class="text-grey-darker">&lt;none&gt;</p>
-    {{/each}}
-  </ul>
-
-  <h2>Stubs</h2>
-  <ul class="mt-4 mb-12">
-    {{#each this.data.stubs key="id" as |page|}}
-      <li>{{link-to (or page.title "<untitled>") 'page' page.id}}</li>
-    {{else}}
-      <p class="text-grey-darker">&lt;none&gt;</p>
-    {{/each}}
-  </ul>
-  --}}
-
   <h2>Pages</h2>
   <ul class="mt-4 mb-12">
-    {{#each this.graph.pages key="uuid" as |page|}}
-      <li>{{link-to (or page.title.value '<untitled>') 'page' page.uuid}}</li>
+    {{#each (subscribe this.graph.pages) key="uuid" as |page|}}
+      <li>{{link-to (or (get (subscribe page.title) 'value') '<untitled>') 'page' page.uuid}}</li>
     {{else}}
       <p class="text-grey-darker">&lt;none&gt;</p>
     {{/each}}

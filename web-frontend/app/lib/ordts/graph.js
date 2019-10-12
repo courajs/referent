@@ -35,6 +35,10 @@ export class Graph {
     };
   }
 
+  get value() {
+    return this.evaluate();
+  }
+
   evaluate() {
     let nodes = {};
     let edges = {};

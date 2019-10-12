@@ -2,7 +2,7 @@ import Service, {inject as service} from '@ember/service';
 import Evented from '@ember/object/evented';
 import {task} from 'ember-concurrency';
 import {Observable,Subject,BehaviorSubject,of,from,merge} from 'rxjs';
-import {map,flatMap,mergeMap,reduce,multicast,refCount} from 'rxjs/operators';
+import {map,flatMap,mergeMap,reduce,multicast,refCount,publishBehavior} from 'rxjs/operators';
 import {EquivMap} from '@thi.ng/associative';
 import {keepLatest} from 'nomicon/lib/concurrency';
 import {CatchUpSubject,TrackedBehavior} from 'nomicon/lib/observables';
@@ -116,7 +116,15 @@ export default class Sync extends Service {
     }
 
     console.log('making', id, 'initially');
-    let ordt = new Sequence(this.auth.clientId);
+
+    // HACK - we won't have clientId until we've awaited
+    // this.auth.awaitAuth, so we just poke it in later,
+    // before we ever create any atoms using the ordt,
+    // and before we've yielded it externally, so no one else
+    // can have created atoms using it either.
+    // 
+    // We create it here so that we can prime the BehaviorSubject with it.
+    let ordt = new Sequence(this.auth.clientId, []);
 
     // ok potentially confusing rxjs stuff here.
     // There's some prep stuff we need to do before we can make
@@ -148,6 +156,7 @@ export default class Sync extends Service {
     // the resolved value. That's just how from + Promises work.
     seq = from(this.prepare(id)).pipe(
         mergeMap(db => {
+          ordt.id = this.auth.clientId;
           return merge(this.localNotifier, of(0)).pipe(
               fetchNewInResponse(db, id),
               map(update => {
@@ -164,12 +173,38 @@ export default class Sync extends Service {
     return seq;
   }
 
-  async graph(id) {
-    await this.auth.awaitAuth;
-    return this.ordtFromCollection(
-        new Graph(this.auth.clientId, []),
-        id
+  get graph() {
+    if (this._graph) {
+      return this._graph;
+    }
+    const id = 'graph';
+
+    // HACK - we won't have clientId until we've awaited
+    // this.auth.awaitAuth, so we just poke it in later,
+    // before we ever create any atoms using the ordt,
+    // and before we've yielded it externally, so no one else
+    // can have created atoms using it either.
+    // 
+    // We create it here so that we can prime the BehaviorSubject with it.
+    let ordt = new Graph(this.auth.clientId, []);
+
+    // basically same as sequence above, but we always need the graph,
+    // so no need to refCount.
+    this._graph = from(this.prepare('graph')).pipe(
+        mergeMap(db => {
+          ordt.id = this.auth.clientId;
+          return merge(this.localNotifier, of(0)).pipe(
+              fetchNewInResponse(db, id),
+              map(update => {
+                ordt.mergeAtoms(update);
+                return ordt;
+              }),
+          );
+        }),
+        publishBehavior(ordt),
     );
+    this._graph.connect();
+    return this._graph;
   }
 
   async liveCollection(id) {
