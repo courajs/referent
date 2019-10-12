@@ -105,9 +105,8 @@ export default class GraphService extends Service {
   // Mutations
 
   async newPage() {
-    await this.auth.awaitAuth;
-    await this._graph.initial;
-    let atom = this._graph.value.addNode();
+    let g = this.sync.graph.getSubject().value;
+    let atom = g.addNode();
     await this.sync.write('graph', [atom]);
     return atom;
   }
