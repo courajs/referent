@@ -21,10 +21,11 @@
 
   {{#if this.showModal}}
     <Modal @close={{action (mut this.showModal) false}}>
+      {{! HACK: this @path is so janky}}
       <Typeahead
         @choose={{bind this.goToPage}}
-        @options={{this.graph.pages}}
-        @path="title.value"
+        @options={{this.graph.pages._subject.value}}
+        @path="title.source._subject.value.value"
         @placeholder="Go to page..."
       />
     </Modal>
