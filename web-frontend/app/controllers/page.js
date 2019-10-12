@@ -3,6 +3,7 @@ import {inject} from '@ember/service';
 import {computed} from '@ember/object';
 import {alias} from '@ember/object/computed';
 import {task, taskGroup, waitForProperty} from 'ember-concurrency';
+import {take,last} from 'rxjs/operators';
 
 import {bound} from 'nomicon/lib/hotkeys';
 import {CREATE} from 'nomicon/lib/typeahead';
@@ -64,31 +65,43 @@ export default Controller.extend({
   prompts: taskGroup().drop(),
 
   promptAddOutgoing: task(function* () {
-    let pages = this.graph.pages;
     let uuid = this.model.uuid;
-    pages = pages.filter(other => {
-      if (other.uuid === uuid) {
+
+    let links = this.model.links.getSubject().value.outgoing;
+    let pages = this.graph.pages.getSubject().value;
+
+    pages = pages.filter(p => {
+      if (p.uuid === uuid) {
         return false;
       }
-      return !this.outgoing.some(l => l.page_uuid === other.uuid);
+      return !links.some(l => l.page_uuid === p.uuid);
     });
 
     this.setProperties({
       showModal: true,
       modalLabel: 'Add outgoing link...',
       modalOptions: pages,
-      modalPath: "title.value",
+      modalPath: 'title.source._subject.value.value',
       modalShowCreateOption: true,
     });
     let choice = yield waitForProperty(this, 'modalChoice');
+
     if (choice === CREATE) {
       let newPageAtom = yield this.graph.newPage();
-      let {id,seq} = yield this.graph.titleForPage(newPageAtom.uuid);
-      let fresh = seq.value.become(this.modalSearchText);
-      yield this.sync.write(id, fresh);
-      yield this.graph.link(uuid, newPageAtom.uuid);
+      let newId = newPageAtom.uuid;
+
+      let link_promise = this.graph.link(uuid, newId);
+
+      let titleId = ['page',newId,'title'];
+      let title = this.sync.sequence(titleId);
+      let seq = yield title.pipe(take(2),last()).toPromise();
+      let fresh = seq.become(this.modalSearchText);
+
+      yield this.sync.write(titleId, fresh);
+      yield link_promise;
+
       this.setProperties(MODAL_DEFAULTS);
-      return this.transitionToRoute('page', newPageAtom.uuid);
+      return this.transitionToRoute('page', newId);
     } else {
       yield this.graph.link(uuid, choice.uuid);
       this.setProperties(MODAL_DEFAULTS);
@@ -96,31 +109,48 @@ export default Controller.extend({
   }).group('prompts'),
 
   promptAddIncoming: task(function* () {
-    let pages = this.graph.pages;
     let uuid = this.model.uuid;
-    pages = pages.filter(other => {
-      if (other.uuid === uuid) {
+
+    let links = this.model.links.getSubject().value.incoming;
+    let pages = this.graph.pages.getSubject().value;
+
+    // other pages we're not already linked to
+    pages = pages.filter(p => {
+      if (p.uuid === uuid) {
         return false;
       }
-      return !this.incoming.some(l => l.page_uuid === other.uuid);
+      return !links.some(l => l.page_uuid === p.uuid);
     });
 
     this.setProperties({
       showModal: true,
       modalLabel: 'Add incoming link...',
       modalOptions: pages,
-      modalPath: 'title.value',
+      modalPath: 'title.source._subject.value.value',
       modalShowCreateOption: true,
     });
     let choice = yield waitForProperty(this, 'modalChoice');
+
     if (choice === CREATE) {
       let newPageAtom = yield this.graph.newPage();
-      let {id,seq} = yield this.graph.titleForPage(newPageAtom.uuid);
-      let fresh = seq.value.become(this.modalSearchText);
-      yield this.sync.write(id, fresh);
-      yield this.graph.link(newPageAtom.uuid, uuid);
+      let newId = newPageAtom.uuid;
+
+      let link_promise = this.graph.link(newId, uuid);
+
+      let titleId = ['page',newId,'title'];
+      let title = this.sync.sequence(titleId);
+      let seq = yield title.pipe(take(2),last()).toPromise();
+      let fresh = seq.become(this.modalSearchText);
+
+      yield this.sync.write(titleId, fresh);
+      yield link_promise;
+      // let {id,seq} = yield this.graph.titleForPage(newPageAtom.uuid);
+      // let fresh = seq.value.become(this.modalSearchText);
+      // yield this.sync.write(id, fresh);
+      // yield this.graph.link(newPageAtom.uuid, uuid);
+
       this.setProperties(MODAL_DEFAULTS);
-      return this.transitionToRoute('page', newPageAtom.uuid);
+      return this.transitionToRoute('page', newId);
     } else {
       yield this.graph.link(choice.uuid, uuid);
       this.setProperties(MODAL_DEFAULTS);

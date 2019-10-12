@@ -154,6 +154,12 @@ export default class Sync extends Service {
     // Because the initial prepare observable was created from a promise,
     // even if it is already resolved, when you subscribe to it you'll get
     // the resolved value. That's just how from + Promises work.
+    // 
+    // ACTUALLY people can poke into the subject and get the ordt
+    // while it doesn't actually have an id yet :(
+    // seq.source._subject.value (the ordt, might not have id yet)
+    // although it will have the id if the clock ensure has finished,
+    // or if the initial construction happened after auth was constructed.
     seq = from(this.prepare(id)).pipe(
         mergeMap(db => {
           ordt.id = this.auth.clientId;

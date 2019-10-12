@@ -111,9 +111,8 @@ export default class GraphService extends Service {
   }
 
   async link(fromuuid, touuid) {
-    await this.auth.awaitAuth;
-    await this._graph.initial;
-    let atom = this._graph.value.addEdge(fromuuid, touuid);
+    let g = this.sync.graph.getSubject().value;
+    let atom = g.addEdge(fromuuid, touuid);
     await this.sync.write('graph', [atom]);
     return atom;
   }
