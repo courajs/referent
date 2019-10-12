@@ -58,37 +58,36 @@ export default class GraphService extends Service {
 
   async linksForPage(uuid) {
     let links = this.sync.graph.pipe(
-        concatMap(async g => {
+        map(g => {
           let {incoming, outgoing} = g.evaluate();
           incoming = incoming[uuid] || [];
           outgoing = outgoing[uuid] || [];
-          incoming = incoming.map(async l => {
-            return {
-              link_uuid: l.uuid,
-              page_uuid: l.from,
-              title: this.sync.sequence(['page',l.from,'title']),
-            };
-          });
-          outgoing = outgoing.map(async l => {
-            return {
-              link_uuid: l.uuid,
-              page_uuid: l.to,
-              title: this.sync.sequence(['page',l.to,'title']),
-            };
-          });
           return {
-            incoming: await Promise.all(incoming),
-            outgoing: await Promise.all(outgoing),
+            incoming: incoming.map(l => {
+              return {
+                link_uuid: l.uuid,
+                page_uuid: l.from,
+                title: this.sync.sequence(['page',l.from,'title']),
+              };
+            }),
+            outgoing: outgoing.map(l => {
+              return {
+                link_uuid: l.uuid,
+                page_uuid: l.to,
+                title: this.sync.sequence(['page',l.to,'title']),
+              };
+            }),
           };
-        })
+        }),
+        publishBehavior(),
     );
+    links.connect();
     return links;
   }
 
   _pages() {
     let p = this.sync.graph.pipe(
         map(g => {
-          window.garph = g;
           return g.value.nodes.map(n => {
             return {
               uuid: n,

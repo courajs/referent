@@ -127,28 +127,36 @@ export default Controller.extend({
     }
   }).group('prompts'),
 
+  // HACK: this modalPath is pretty janky.
+  // It uses knowledge that title is a refCount around a
+  // multicast using a BehaviorSubject.
   promptGoTo: task(function* () {
+    let links = this.model.links.getSubject().value;
     this.setProperties({
       showModal: true,
       modalLabel: 'Go to...',
-      modalOptions: this.page.outgoing,
-      modalPath: 'to.title',
+      modalOptions: links.outgoing,
+      modalPath: 'title.source._subject.value.value',
     });
     let choice = yield waitForProperty(this, 'modalChoice');
     this.setProperties(MODAL_DEFAULTS);
-    return this.transitionToRoute('page', choice.to.uuid);
+    return this.transitionToRoute('page', choice.page_uuid);
   }).group('prompts'),
 
+  // HACK: this modalPath is pretty janky.
+  // It uses knowledge that title is a refCount around a
+  // multicast using a BehaviorSubject.
   promptGoFrom: task(function* () {
+    let links = this.model.links.getSubject().value;
     this.setProperties({
       showModal: true,
       modalLabel: 'Go to...',
-      modalOptions: this.page.incoming,
-      modalPath: 'from.title',
+      modalOptions: links.incoming,
+      modalPath: 'title.source._subject.value.value',
     });
     let choice = yield waitForProperty(this, 'modalChoice');
     this.setProperties(MODAL_DEFAULTS);
-    return this.transitionToRoute('page', choice.from.uuid);
+    return this.transitionToRoute('page', choice.page_uuid);
   }).group('prompts'),
 
   close() {
