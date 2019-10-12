@@ -23,8 +23,6 @@ export default Controller.extend({
 
   page: alias('model.page'),
   title: alias('model.titleSequence'),
-  incoming: alias('model.links.value.incoming'),
-  outgoing: alias('model.links.value.outgoing'),
 
   //   ...MODAL_DEFAULTS,
   //   ^ this breaks an ESLint rule

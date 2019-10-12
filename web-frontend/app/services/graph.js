@@ -29,19 +29,14 @@ export default class GraphService extends Service {
     let titleId = ['page',uuid,'title'];
     let bodyId = ['page',uuid,'body'];
 
-    let [title,body] = await Promise.all([
-        this.sync.sequence(titleId),
-        this.sync.sequence(bodyId),
-    ]);
-
     return {
       title: {
         id: titleId,
-        seq: title,
+        seq: this.sync.sequence(titleId),
       },
       body: {
         id: bodyId,
-        seq: body,
+        seq: this.sync.sequence(bodyId),
       },
     };
   }
@@ -75,14 +70,14 @@ export default class GraphService extends Service {
             return {
               link_uuid: l.uuid,
               page_uuid: l.from,
-              title: await this.trackedReadOnlySequence(['page',l.from,'title']),
+              title: this.sync.sequence(['page',l.from,'title']),
             };
           });
           outgoing = outgoing.map(async l => {
             return {
               link_uuid: l.uuid,
               page_uuid: l.to,
-              title: await this.trackedReadOnlySequence(['page',l.to,'title']),
+              title: this.sync.sequence(['page',l.to,'title']),
             };
           });
           return {
@@ -91,7 +86,7 @@ export default class GraphService extends Service {
           };
         })
     );
-    return await new TrackedBehavior(links).initial;
+    return links;
   }
 
   async _allPages() {

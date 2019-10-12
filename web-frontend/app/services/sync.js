@@ -1,8 +1,8 @@
 import Service, {inject as service} from '@ember/service';
 import Evented from '@ember/object/evented';
 import {task} from 'ember-concurrency';
-import {Observable,Subject,BehaviorSubject,of,merge} from 'rxjs';
-import {flatMap,map,reduce,multicast,refCount} from 'rxjs/operators';
+import {Observable,Subject,BehaviorSubject,of,from,merge} from 'rxjs';
+import {map,flatMap,mergeMap,reduce,multicast,refCount} from 'rxjs/operators';
 import {EquivMap} from '@thi.ng/associative';
 import {keepLatest} from 'nomicon/lib/concurrency';
 import {CatchUpSubject,TrackedBehavior} from 'nomicon/lib/observables';
@@ -101,29 +101,65 @@ export default class Sync extends Service {
     );
   }
 
-  async sequence(id) {
+  async prepare(id) {
+    await this.auth.awaitAuth;
+    let db = await this.idb.db;
+    await ensureClockForCollection(db, id);
+    this.sw.send('ask');
+    return db;
+  }
+
+  sequence(id) {
     let seq = this._id_map.get(id);
     if (seq) {
       return seq;
     }
 
-    await this.auth.awaitAuth;
-    let db = await this.idb.db;
-    await ensureClockForCollection(db, id);
-    console.log('instantiating an ordt');
-    this.sw.send('ask');
-
+    console.log('making', id, 'initially');
     let ordt = new Sequence(this.auth.clientId);
 
-    seq = merge(this.localNotifier, of(0)).pipe(
-        fetchNewInResponse(db, id),
-        map(update => {
-          ordt.mergeAtoms(update);
-          return ordt;
+    // ok potentially confusing rxjs stuff here.
+    // There's some prep stuff we need to do before we can make
+    // the main sequence observable - await some promises for resources,
+    // and then ensure some initial database state for the collection.
+    //
+    // Then, we can start fetching new atoms from the database in response
+    // to prompts from localNotifier.
+    //
+    // We mergeMap so that a promise for the db and finished initialization
+    // "turns into" the obserable for the updates - it's a flattening.
+    //
+    // fetchNewInResponse keeps some local state, and each time it's poked
+    // by an emission, it checks for and emits any new atoms from the db.
+    // Then we merge that into the ordt, and re-emit it.
+    //
+    // We also use multicast and refCount - anyone who subscribes will get
+    // the latest state without having to wait for the next update, because
+    // of the BehaviorSubject. We prime it with the empty ordt.
+    //
+    // The refCount means the BehaviorSubject, and its subscription to the
+    // merged ordt update observable will stick around as long as there
+    // are any subscriptions to the top-level observable. Once there are no
+    // more subscriptions, it will tear down the subject and the ordt
+    // observable.
+    // Next time it's subscribed to, it will re-create everything.
+    // Because the initial prepare observable was created from a promise,
+    // even if it is already resolved, when you subscribe to it you'll get
+    // the resolved value. That's just how from + Promises work.
+    seq = from(this.prepare(id)).pipe(
+        mergeMap(db => {
+          return merge(this.localNotifier, of(0)).pipe(
+              fetchNewInResponse(db, id),
+              map(update => {
+                ordt.mergeAtoms(update);
+                return ordt;
+              }),
+          );
         }),
         multicast(() => new BehaviorSubject(ordt)),
         refCount(),
     );
+
     this._id_map.set(id, seq);
     return seq;
   }
