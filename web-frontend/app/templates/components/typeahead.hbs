@@ -14,7 +14,7 @@
         {{#if (eq item this.CREATE)}}
           Create "{{this.search}}"...
         {{else}}
-          {{if @path (get item @path) item}}
+          {{or (if @path (get item @path) item) this.BLANK}}
         {{/if}}
       </li>
     {{/each}}
