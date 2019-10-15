@@ -79,7 +79,6 @@ export default class Sync extends Service {
   }
 
   async prepare(id) {
-    await this.auth.awaitAuth;
     let db = await this.idb.db;
     await ensureClockForCollection(db, id);
     this.sw.send('ask');
@@ -92,13 +91,6 @@ export default class Sync extends Service {
       return seq;
     }
 
-    // HACK - we won't have clientId until we've awaited
-    // this.auth.awaitAuth, so we just poke it in later,
-    // before we ever create any atoms using the ordt,
-    // and before we've yielded it externally, so no one else
-    // can have created atoms using it either.
-    // 
-    // We create it here so that we can prime the BehaviorSubject with it.
     let ordt = new Sequence(this.auth.clientId, []);
 
     // ok potentially confusing rxjs stuff here.
@@ -137,7 +129,6 @@ export default class Sync extends Service {
     // or if the initial construction happened after auth was constructed.
     seq = from(this.prepare(id)).pipe(
         mergeMap(db => {
-          ordt.id = this.auth.clientId;
           return merge(this.localNotifier, of(0)).pipe(
               fetchNewInResponse(db, id),
               map(update => {
@@ -160,20 +151,12 @@ export default class Sync extends Service {
     }
     const id = 'graph';
 
-    // HACK - we won't have clientId until we've awaited
-    // this.auth.awaitAuth, so we just poke it in later,
-    // before we ever create any atoms using the ordt,
-    // and before we've yielded it externally, so no one else
-    // can have created atoms using it either.
-    // 
-    // We create it here so that we can prime the BehaviorSubject with it.
     let ordt = new Graph(this.auth.clientId, []);
 
     // basically same as sequence above, but we always need the graph,
     // so no need to refCount.
     this._graph = from(this.prepare('graph')).pipe(
         mergeMap(db => {
-          ordt.id = this.auth.clientId;
           return merge(this.localNotifier, of(0)).pipe(
               fetchNewInResponse(db, id),
               map(update => {

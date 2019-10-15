@@ -9,7 +9,31 @@ var cookie = require('cookie');
 
 var app = express();
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http, {
+  allowRequest(req, fn) {
+    console.log('incoming request');
+
+    if (!req.headers.cookie) {
+      console.log('no cookie!');
+      return fn(null, false);
+    }
+    let {live_id, password} = cookie.parse(req.headers.cookie);
+    if (!live_id) {
+      console.log('no client id!');
+      return fn(null, false);
+    }
+    if (!password) {
+      console.log('no password!');
+      return fn(null, false);
+    }
+    if (password !== 'bird') {
+      console.log('wrong password!');
+      return fn(null, false);
+    }
+
+    fn(null, true);
+  },
+});
 
 
 var dbFile = process.argv[2] || '/var/referent/sqlite.db';

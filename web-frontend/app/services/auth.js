@@ -10,38 +10,43 @@ export default class Auth extends Service {
   @tracked authState = 'pending';
   @tracked clientId;
 
-  init() {
-    this.awaitAuth = new Promise((resolve) => {
-      this._authed = resolve;
-    });
-    this.awaitAuthChecked = new Promise((resolve) => {
-      this._authChecked = resolve;
-    });
-    
-    this.sw.on('authed').pipe(first()).toPromise().then((as) => {
-      this.authState = 'authed';
-      this.clientId = as;
-      this._authed();
-    });
-
-    this._checkForId();
-  }
-
-  async _checkForId() {
+  async init() {
     let db = await this.idb.db;
-    let id = await db.get('meta', 'client_id');
-    if (id) {
-      this.authState = 'authed';
-      this.clientId = id;
-      this._authed();
+    let tx = db.transaction('meta', 'readwrite');
+    let id = await tx.store.get('client_id');
+    if (!id) {
+      id = ''+Math.random();
+      await tx.store.put(id, 'client_id');
+    }
+    this.clientId = id;
+
+    let pw = await tx.store.get('password');
+
+    if (pw) {
+      this.doAuth(id, pw);
     } else {
       this.authState = 'unauthed';
-      this.authenticateAs(''+Math.random());
     }
-    this._authChecked();
+
+    this.sw.on('authed').subscribe(() => {
+      this.authState = 'authed';
+    });
+    this.sw.on('bad_auth').subscribe(() => {
+      this.authState = 'bad_auth';
+    });
   }
 
-  authenticateAs(id) {
-    this.sw.send('auth', id);
+  submitPassword(pw) {
+    this.doAuth(this.clientId, pw);
+  }
+
+  async doAuth(id, pw) {
+    this.authState = 'authing';
+
+    const one_year = 60 * 60 * 24 * 365;
+    document.cookie = `password=${encodeURIComponent(pw)};path=/;max-age=${year}`;
+    document.cookie = `live_id=${id};path=/;max-age=${year}`;
+
+    this.sw.send('auth');
   }
 }

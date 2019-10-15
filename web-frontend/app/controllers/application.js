@@ -9,8 +9,6 @@ export default Controller.extend({
   auth: inject(),
   graph: inject(),
 
-  clientId: tracked({value:''}),
-
   environment: env.environment,
   showModal: false,
 
