@@ -72,13 +72,28 @@ var corsOptions = {
 
 app.use(require('cookie-parser')());
 app.use(require('body-parser').text());
-app.post('/auth', cors(corsOptions), function(req, res){
-  if (!req.body) {
-    console.log('no body in auth request!');
-    res.status(400).send('send your id!!');
-    return;
+app.get('/check-auth', cors(corsOptions), function(req, res){
+  console.log('checking auth');
+  if (!req.headers.cookie) {
+    console.log('no cookie!');
+    return res.status(403).send('No auth cookie');
   }
-  res.cookie('live_id', req.body, { maxAge: 90000000, httpOnly: false });
+
+  let {live_id, password} = cookie.parse(req.headers.cookie);
+
+  if (!live_id) {
+    console.log('no client id!');
+    return res.status(403).send('No client id');
+  }
+  if (!password) {
+    console.log('no password!');
+    return res.status(403).send('No password');
+  }
+  if (password !== 'bird') {
+    console.log('wrong password!');
+    return res.status(403).send('Incorrect password');
+  }
+
   res.send('ok');
 });
 

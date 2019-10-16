@@ -6,7 +6,7 @@
   Enter password:
   <Input
     @value={{this.password}}
-    @enter={{action this.auth.submitPassword}}
+    @enter={{bind this.auth.submitPassword}}
     type="password"
     class="border rounded my-2 text-center leading-tight focus:outline-none focus:shadow-outline"
   />
@@ -15,7 +15,7 @@
   Enter password:
   <Input
     @value={{this.password}}
-    @enter={{action this.auth.submitPassword}}
+    @enter={{bind this.auth.submitPassword}}
     type="password"
     class="border rounded my-2 text-center leading-tight focus:outline-none focus:shadow-outline"
   />

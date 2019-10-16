@@ -24,18 +24,18 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
 //    and sends items to the server.
 // - it handles auth events and stuff somehow (this is most of what we're changing right now)
 
-let io_host, io_path, auth_endpoint;
+let IO_HOST, IO_PATH, AUTH_ENDPOINT;
 // This is flipped true by the nix build
 const PROD = false;
 
 if (PROD) {
-  io_host = "/";
-  io_path = "/sync/socket.io";
-  auth_endpoint = "/sync/auth"
+  IO_HOST = "/";
+  IO_PATH = "/sync/socket.io";
+  AUTH_ENDPOINT = "/sync/check-auth"
 } else {
-  io_host = "/";
-  io_path = "/socket.io";
-  auth_endpoint = "/auth";
+  IO_HOST = "/";
+  IO_PATH = "/socket.io";
+  AUTH_ENDPOINT = "/check-auth";
 }
 
 (function (idb, io) {
@@ -173,7 +173,7 @@ if (PROD) {
   self.pock = Promise.all([self.authed, self.inited])
     .then(function() {
       console.log('init socket!!');
-      let socket = io(io_host, {jsonp: false, path: io_path, transports: ['websocket', 'polling']});
+      let socket = io(IO_HOST, {jsonp: false, path: IO_PATH, transports: ['websocket', 'polling']});
       self.socket = socket;
       return socket;
     });
@@ -307,16 +307,28 @@ if (PROD) {
     self.syncOwn();
   });
 
-  self.on('re-auth', function() {
+  self.on('authed', function() {
     // if socket isn't connected, connect it.
   });
 
-  self.on('do-auth'), function(pw) {
+  self.on('check-auth', async function(pw) {
     // hit the check auth endpoint. if it fails for auth reasons,
     // send a bad_auth event to the tabs.
     // if it succeeds, persist the pw, open the socket,
     // and send an authed event to the tabs.
     // if it fails for some other reason, retry it I guess? Log it?
+    let res;
+    try {
+      res = await fetch(AUTH_ENDPOINT);
+    } catch (e) {
+      return console.log('Unexpected problem checking auth', e);
+    }
+
+    if (res.status === 403) {
+      self.broadcast('bad_auth');
+    } else {
+      self.broadcast('authed');
+    }
   });
 
   self.doAuth = async function() {

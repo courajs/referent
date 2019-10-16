@@ -33,7 +33,7 @@ export default class Auth extends Service {
     if (pw) {
       this.authState = 'authed';
       this.cookie(id, pw);
-      this.sw.send('re-auth');
+      this.sw.send('authed');
     } else {
       this.authState = 'unauthed';
     }
@@ -42,7 +42,7 @@ export default class Auth extends Service {
   submitPassword(pw) {
     this.authState = 'authing';
     this.cookie(this.clientId, pw);
-    this.sw.send('do-auth', pw);
+    this.sw.send('check-auth', pw);
   }
 
   cookie(id, pw) {
