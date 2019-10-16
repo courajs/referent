@@ -21,13 +21,13 @@ const no_cookie = 'No auth cookie';
 const no_id = 'No client id';
 const no_password = 'No password';
 const wrong_password = 'Incorrect password';
-function checkAuth(cookie) {
-  if (!cookie) {
+function checkAuth(cook) {
+  if (!cook) {
     console.log(no_cookie);
     return no_cookie;
   }
 
-  let {live_id, password} = cookie.parse(cookie);
+  let {live_id, password} = cookie.parse(cook);
 
   if (!live_id) {
     console.log(no_id);
@@ -88,7 +88,7 @@ app.get('/check-auth', cors(corsOptions), function(req, res){
   if (err) {
     res.status(403).send(err);
   } else {
-    res.send(ok);
+    res.send('ok');
   }
 });
 

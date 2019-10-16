@@ -149,39 +149,17 @@ if (PROD) {
   // and have no way to tell that it's already been activated.
   // so, we just ping from every active tab when they first start up,
   // and that will trigger socket initialization in the sw if necessary.
-  self.dbp = new Promise(function(resolve) {
-    let db = idb__default.openDB(DB_NAME, DB_VERSION, {upgrade});
-    self.db = db;
-    resolve(db);
-  });
-  self.inited = new Promise(function(resolve) {
-    self.once('init', function() {
-      resolve();
-    });
-  });
-  self.authed = new Promise(async function(resolve) {
-    self.resolveAuth = (id) => {
-      self.id = id;
-      resolve();
-    };
-    let db = await self.dbp;
-    let id = await db.get('meta', 'client_id');
-    if (id) {
-      resolveAuth(id);
-    }
-  });
-  self.pock = Promise.all([self.authed, self.inited])
-    .then(function() {
-      console.log('init socket!!');
-      let socket = io(IO_HOST, {jsonp: false, path: IO_PATH, transports: ['websocket', 'polling']});
-      self.socket = socket;
-      return socket;
-    });
-
+  //
+  // STATE / MUTATION: nothing in this sw makes use of the db until
+  // after we've authed. So as long as we await dbp in the auth routine,
+  // we can just use self.db everywhere else.
+  self.dbp = idb__default.openDB(DB_NAME, DB_VERSION, {upgrade})
+      .then(function(db) {
+        self.db = db;
+        return db;
+      });
 
   self.dbp.catch((e) => console.log("error opening db in service worker!", e));
-  self.pock.catch((e) => console.log("error opening socket.io connection in service worker!", e));
-
 
   // data sync logic
   //
@@ -190,11 +168,9 @@ if (PROD) {
   // we keep track of the most recently acknowledged message
   // for each collection in our 'clocks' object store.
   // so, check them all for last_local > synced_local.
+  // this will only ever be called after we're authed and the socket is created.
   self.syncOwn = async function() {
-    let db = await self.dbp;
-    let socket = await self.pock;
-    await self.authed;
-    let client_id = self.id;
+    let {db, socket, client_id} = self;
   
     let tx = db.transaction(['clocks', 'data']);
     let clocks = await tx.objectStore('clocks').getAll();
@@ -232,8 +208,7 @@ if (PROD) {
   // server replies with a 'tell' event, so most of the hard stuff
   // is in there
   self.syncRemote = async function() {
-    let db = await self.dbp;
-    let socket = await self.pock;
+    let {db, socket} = self;
     let clocks = await db.getAll('clocks');
     let ask = clocks.map(c => { return {collection: c.collection, from: c.synced_remote}; });
     socket.emit('ask', ask);
@@ -248,9 +223,7 @@ if (PROD) {
   // finally, we broadcast that there's an update to all connected tabs.
   // they're responsible for reading from indexeddb themselves
   self.handleTell = async function(updates) {
-    let db = await self.dbp;
-    await self.authed;
-    let client_id = self.id;
+    let {db, client_id} = self;
 
     let tx = db.transaction(['clocks','data'], 'readwrite');
     let data = tx.objectStore('data');
@@ -278,8 +251,14 @@ if (PROD) {
   };
 
 
-  self.pock.then((socket) => {
-    // includes reconnect, apparently
+  self.ensureSocket = async function() {
+    if (self.socket) { return; }
+
+    let db = await self.dbp;
+
+    self.client_id = await db.get('meta', 'client_id');
+
+    let socket = self.socket = io(IO_HOST, {jsonp: false, path: IO_PATH, transports: ['websocket', 'polling']});
     socket.on('connect', self.syncAll);
     socket.on('tell', self.handleTell);
 
@@ -295,21 +274,25 @@ if (PROD) {
       }
       socket.io.reconnection(true);
     });
-  });
+  };
 
-  self.on('ask', self.syncRemote);
+  self.on('ask', () => {
+    if (self.socket) {
+      self.syncRemote();
+    }
+  });
 
   self.on('update', async function(event) {
     // broadcast to other tabs
     self.broadcastOthers(event.source.id, 'update');
     
     // send update to server
-    self.syncOwn();
+    if (self.socket) {
+      self.syncOwn();
+    }
   });
 
-  self.on('authed', function() {
-    // if socket isn't connected, connect it.
-  });
+  self.on('authed', self.ensureSocket);
 
   self.on('check-auth', async function(pw) {
     // hit the check auth endpoint. if it fails for auth reasons,
@@ -329,21 +312,9 @@ if (PROD) {
     } else if (res.ok) {
       let db = await self.dbp;
       await db.put('meta', pw, 'password');
+      await self.ensureSocket();
       self.broadcast('authed');
     }
   });
-
-  self.doAuth = async function() {
-    console.log('authing');
-    let db = await self.dbp;
-    resolveAuth(name);
-    let socket = await self.pock;
-    socket.disconnect();
-    socket.connect();
-    console.log('sending authed');
-    await self.broadcast('authed', name);
-  };
-
-  self.on('auth', self.doAuth);
 
 }(idb, io));

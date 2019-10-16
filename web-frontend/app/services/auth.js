@@ -20,6 +20,8 @@ export default class Auth extends Service {
       this.authState = 'bad_auth';
     });
 
+    // STATE / MUTATION: it's important to write client_id to indexeddb
+    // before sending either of the auth events to the sw.
     let db = await this.idb.db;
     let tx = db.transaction('meta', 'readwrite');
     let id = await tx.store.get('client_id');
