@@ -321,12 +321,14 @@ if (PROD) {
     try {
       res = await fetch(AUTH_ENDPOINT);
     } catch (e) {
-      return console.log('Unexpected problem checking auth', e);
+      return console.error('Unexpected problem checking auth', e);
     }
 
     if (res.status === 403) {
       self.broadcast('bad_auth');
-    } else {
+    } else if (res.ok) {
+      let db = await self.dbp;
+      await db.put('meta', pw, 'password');
       self.broadcast('authed');
     }
   });

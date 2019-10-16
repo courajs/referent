@@ -11,29 +11,38 @@ var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http, {
   allowRequest(req, fn) {
-    console.log('incoming request');
-
-    if (!req.headers.cookie) {
-      console.log('no cookie!');
-      return fn(null, false);
-    }
-    let {live_id, password} = cookie.parse(req.headers.cookie);
-    if (!live_id) {
-      console.log('no client id!');
-      return fn(null, false);
-    }
-    if (!password) {
-      console.log('no password!');
-      return fn('no password specified', false);
-    }
-    if (password !== 'bird') {
-      console.log('wrong password!');
-      return fn(null, false);
-    }
-
-    fn(null, true);
+    let err = checkAuth(req.headers.cookie);
+    fn(err, !err);
   },
 });
+
+
+const no_cookie = 'No auth cookie';
+const no_id = 'No client id';
+const no_password = 'No password';
+const wrong_password = 'Incorrect password';
+function checkAuth(cookie) {
+  if (!cookie) {
+    console.log(no_cookie);
+    return no_cookie;
+  }
+
+  let {live_id, password} = cookie.parse(cookie);
+
+  if (!live_id) {
+    console.log(no_id);
+    return no_id;
+  }
+  if (!password) {
+    console.log(no_password);
+    return no_password;
+  }
+  if (password !== 'bird') {
+    console.log(wrong_password);
+    return wrong_password;
+  }
+  return null;
+}
 
 
 var dbFile = process.argv[2] || '/var/referent/sqlite.db';
@@ -74,27 +83,13 @@ app.use(require('cookie-parser')());
 app.use(require('body-parser').text());
 app.get('/check-auth', cors(corsOptions), function(req, res){
   console.log('checking auth');
-  if (!req.headers.cookie) {
-    console.log('no cookie!');
-    return res.status(403).send('No auth cookie');
-  }
 
-  let {live_id, password} = cookie.parse(req.headers.cookie);
-
-  if (!live_id) {
-    console.log('no client id!');
-    return res.status(403).send('No client id');
+  let err = checkAuth(req.headers.cookie);
+  if (err) {
+    res.status(403).send(err);
+  } else {
+    res.send(ok);
   }
-  if (!password) {
-    console.log('no password!');
-    return res.status(403).send('No password');
-  }
-  if (password !== 'bird') {
-    console.log('wrong password!');
-    return res.status(403).send('Incorrect password');
-  }
-
-  res.send('ok');
 });
 
 function insertValuesForData(these, client_id) {
