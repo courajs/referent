@@ -1,6 +1,29 @@
 importScripts('/v/unpkg.com/socket.io-client@2.2.0/dist/socket.io.slim.dev.js');
 importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
 
+// Here's an outline of everything going on in this sw.
+// - it skips waiting and claims clients
+// - it has an event handling wrapper.
+// - it opens/upgrades the db, and sticks a promise for that on the state.
+// - it sticks a promise for receiving an 'init' event on the state
+// - it sticks a promise for when authentication is successful, and checks
+//   the db to see whether it should resolve that immediately.
+// - it waits for both auth and init, and then opens a socket. It sticks
+//    a promise for that opened socket on the state.
+// - it logs rejections of the db or socket promises
+// - it has a function (`syncOwn`) to send all new local changes down the socket,
+//    and update local sync state from acknowledgements
+// - it has a function (`syncRemote`) to ask the server to send anything new
+// - it has a handler to receive items from the server (either requested or pushed),
+//    and update local state
+// - it waits on the socket to be ready, and attaches the item receiver.
+// - it waits for the socket to be ready, and triggers a full sync
+// - it listens for online/offline events from tabs, and manages the socket.io connection
+// - it listens for 'ask' events from tabs, and asks the server for new items.
+// - it listens for 'update' events from tabs, forwards them to other tabs,
+//    and sends items to the server.
+// - it handles auth events and stuff somehow (this is most of what we're changing right now)
+
 let io_host, io_path, auth_endpoint;
 // This is flipped true by the nix build
 const PROD = false;
@@ -260,6 +283,9 @@ if (PROD) {
     socket.on('connect', self.syncAll);
     socket.on('tell', self.handleTell);
 
+    // we don't have access to online/offline events natively in
+    // the sw, but tabs listen for them and forward them to us.
+
     // don't spam reconnection attempts if we don't have network
     self.on('offline', () => socket.io.reconnection(false));
     // try to reconnect immediately when we know we got network back
@@ -279,6 +305,18 @@ if (PROD) {
     
     // send update to server
     self.syncOwn();
+  });
+
+  self.on('re-auth', function() {
+    // if socket isn't connected, connect it.
+  });
+
+  self.on('do-auth'), function(pw) {
+    // hit the check auth endpoint. if it fails for auth reasons,
+    // send a bad_auth event to the tabs.
+    // if it succeeds, persist the pw, open the socket,
+    // and send an authed event to the tabs.
+    // if it fails for some other reason, retry it I guess? Log it?
   });
 
   self.doAuth = async function() {
