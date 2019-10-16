@@ -24,7 +24,7 @@ var io = require('socket.io')(http, {
     }
     if (!password) {
       console.log('no password!');
-      return fn(null, false);
+      return fn('no password specified', false);
     }
     if (password !== 'bird') {
       console.log('wrong password!');

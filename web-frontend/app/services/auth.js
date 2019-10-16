@@ -2,6 +2,8 @@ import Service, {inject as service} from '@ember/service';
 import {tracked} from '@glimmer/tracking';
 import {first} from 'rxjs/operators';
 
+const ONE_YEAR = 60 * 60 * 24 * 365;
+
 export default class Auth extends Service {
   @service idb;
   @service sw;
@@ -11,6 +13,13 @@ export default class Auth extends Service {
   @tracked clientId;
 
   async init() {
+    this.sw.on('authed').subscribe(() => {
+      this.authState = 'authed';
+    });
+    this.sw.on('bad_auth').subscribe(() => {
+      this.authState = 'bad_auth';
+    });
+
     let db = await this.idb.db;
     let tx = db.transaction('meta', 'readwrite');
     let id = await tx.store.get('client_id');
@@ -21,32 +30,23 @@ export default class Auth extends Service {
     this.clientId = id;
 
     let pw = await tx.store.get('password');
-
     if (pw) {
-      this.doAuth(id, pw);
+      this.authState = 'authed';
+      this.cookie(id, pw);
+      this.sw.send('re-auth');
     } else {
       this.authState = 'unauthed';
     }
-
-    this.sw.on('authed').subscribe(() => {
-      this.authState = 'authed';
-    });
-    this.sw.on('bad_auth').subscribe(() => {
-      this.authState = 'bad_auth';
-    });
   }
 
   submitPassword(pw) {
-    this.doAuth(this.clientId, pw);
+    this.authState = 'authing';
+    this.cookie(this.clientId, pw);
+    this.sw.send('do-auth', pw);
   }
 
-  async doAuth(id, pw) {
-    this.authState = 'authing';
-
-    const one_year = 60 * 60 * 24 * 365;
-    document.cookie = `password=${encodeURIComponent(pw)};path=/;max-age=${year}`;
-    document.cookie = `live_id=${id};path=/;max-age=${year}`;
-
-    this.sw.send('auth');
+  cookie(id, pw) {
+    document.cookie = `password=${encodeURIComponent(pw)};path=/;max-age=${ONE_YEAR}`;
+    document.cookie = `live_id=${id};path=/;max-age=${ONE_YEAR}`;
   }
 }

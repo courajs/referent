@@ -281,11 +281,9 @@ if (PROD) {
     self.syncOwn();
   });
 
-  self.auth = async function(name) {
+  self.doAuth = async function() {
     console.log('authing');
     let db = await self.dbp;
-    db.transaction('meta','readwrite').objectStore('meta').put(name, 'client_id');
-    await fetch(auth_endpoint ,{method: 'POST', mode:'no-cors',credentials:'include', body:name});
     resolveAuth(name);
     let socket = await self.pock;
     socket.disconnect();
@@ -294,6 +292,6 @@ if (PROD) {
     await self.broadcast('authed', name);
   };
 
-  self.on('auth', self.auth);
+  self.on('auth', self.doAuth);
 
 }(idb, io));
