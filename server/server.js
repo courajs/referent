@@ -37,7 +37,8 @@ function checkAuth(cook) {
     console.log(no_password);
     return no_password;
   }
-  if (password !== 'bird') {
+  password = decodeURIComponent(password);
+  if (password !== 'we can do better') {
     console.log(wrong_password);
     return wrong_password;
   }
