@@ -1,3 +1,4 @@
+{server-ip, referent-host}:
 {
   network.description = "Connote server";
   network.enableRollback = true;
@@ -5,12 +6,14 @@
   server = 
   { config, pkgs, ... }:
   {
+    deployment.targetHost = server-ip;
+
     nixpkgs.system = "x86_64-linux";
     imports =
       [ # Include the results of the hardware scan.
         ./vultr-hardware-configuration.nix
         ./run-sync-server.nix
-        ./serve-config.nix
+        (import ./serve-config.nix referent-host)
       ];
 
     # Use the GRUB 2 boot loader.

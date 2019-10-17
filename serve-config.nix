@@ -1,7 +1,6 @@
+referent-host:
 {config, pkgs, ...}:
-
 let app = import ./web-frontend;
-    referent-host = "aaron.wiki";
 in {
   services.nginx = {
     enable = true;
