@@ -19,7 +19,7 @@ var io = require('socket.io')(http, {
 let PASSWORD;
 
 if (fs.existsSync('/run/keys/referent-password')) {
-  PASSWORD = fs.readFileSync('/run/keys/referent-password');
+  PASSWORD = fs.readFileSync('/run/keys/referent-password', 'utf8');
 } else {
   PASSWORD = "change me";
 }
