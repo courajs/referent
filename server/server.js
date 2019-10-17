@@ -16,6 +16,14 @@ var io = require('socket.io')(http, {
   },
 });
 
+let PASSWORD;
+
+if (fs.existsSync('/run/keys/referent-password')) {
+  PASSWORD = fs.readFileSync('/run/keys/referent-password');
+} else {
+  PASSWORD = "change me";
+}
+
 
 const no_cookie = 'No auth cookie';
 const no_id = 'No client id';
@@ -38,7 +46,7 @@ function checkAuth(cook) {
     return no_password;
   }
   password = decodeURIComponent(password);
-  if (password !== 'we can do better') {
+  if (password !== PASSWORD) {
     console.log(wrong_password);
     return wrong_password;
   }

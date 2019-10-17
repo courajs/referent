@@ -1,4 +1,4 @@
-{server-ip, referent-host}:
+{server-ip, referent-host, referent-password}:
 {
   network.description = "Connote server";
   network.enableRollback = true;
@@ -12,7 +12,7 @@
     imports =
       [ # Include the results of the hardware scan.
         ./vultr-hardware-configuration.nix
-        ./run-sync-server.nix
+        (import ./run-sync-server.nix referent-password)
         (import ./serve-config.nix referent-host)
       ];
 
