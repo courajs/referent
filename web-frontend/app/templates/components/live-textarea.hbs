@@ -1,6 +1,7 @@
 {{#let (subscribe @sequence.seq) as |latest|}}
   <textarea
-    value={{latest.value}}
+    {{did-insert (bind this.initialValue) latest}}
+    {{did-update (bind this.updateValue) latest}}
     oninput={{action this.update latest}}
     ...attributes
   ></textarea>
