@@ -208,6 +208,18 @@ setInterval(function() {
 }, 5000);
 */
 
-let listener = http.listen(process.env.PORT, function(){
-  console.log('listening on', listener.address());
-});
+let listener;
+if (process.env.LISTEN_FDS === "1" && process.env.LISTEN_PID === process.pid) {
+  console.log('listening via systemd socket');
+  // systemd ensures fds 3 and up are initialized as any sockets it's passing to the service.
+  // `man sd_listen_fds` for details (https://www.freedesktop.org/software/systemd/man/sd_listen_fds.html)
+  listener = http.listen({fd: 3}, function() {
+    console.log('listening on', listener.address());
+  });
+} else if (process.env.PORT) {
+  console.log('listening via PORT env variable');
+  let listener = http.listen(process.env.PORT, function(){
+    console.log('listening on', listener.address());
+  });
+}
+

@@ -1,4 +1,4 @@
-{server-ip, referent-hosts, referent-host, referent-password}:
+{server-ip, referent-hosts}:
 {
   network.description = "Connote server";
   network.enableRollback = true;
@@ -12,9 +12,7 @@
     imports =
       [ # Include the results of the hardware scan.
         ./vultr-hardware-configuration.nix
-        (import ./referent referent-hosts)
-        (import ./run-sync-server.nix referent-password)
-        (import ./serve-config.nix referent-host)
+        (import ./referent.nix referent-hosts)
       ];
 
     # Use the GRUB 2 boot loader.

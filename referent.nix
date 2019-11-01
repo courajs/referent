@@ -1,15 +1,16 @@
 hosts:
 {config, pkgs, ...}:
 builtins.foldl' (x: y: x // y) {} (map
-{name, password}:
+({name, password}:
 let
   serviceName = "referent-server-${name}";
-  pw = "referent-password-${name}";
-  pwService = "${pw}-key.service";
-  dbFile = "/var/referent/dbs/${name}.db";
-  socketPath = "/run/referent-${name}.socket";
-  app = import ./web-frontend;
-{
+  pw          = "referent-password-${name}";
+  pwService   = "${pw}-key.service";
+  dbFile      = "/var/referent/${name}/referent.db";
+  serverPath  = "/var/referent/${name}/app/server/server.js";
+  socketPath  = "/run/referent-${name}.socket";
+  app         = import ./web-frontend;
+in {
   deployment.keys.${pw}.text = password;
 
   systemd.services.${serviceName} = {
@@ -17,7 +18,7 @@ let
     after = [ "network.target" pwService];
     wants = [ pwService ];
     serviceConfig = {
-      ExecStart = "${pkgs.nodejs-10_x}/bin/node /var/referent/server/server.js ${dbFile}";
+      ExecStart = "${pkgs.nodejs-10_x}/bin/node ${serverPath} ${dbFile}";
     };
   };
 
@@ -41,7 +42,7 @@ let
       };
     };
   };
-}
+})
 hosts) // {
   services.nginx = {
     enable = true;
