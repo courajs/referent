@@ -1,6 +1,9 @@
 hosts:
-{config, pkgs, ...}:
-builtins.foldl' (x: y: x // y) {} (map
+{pkgs, ...}:
+let
+  app = import ./web-frontend;
+in
+pkgs.lib.mkMerge (map
 ({name, password}:
 let
   serviceName = "referent-server-${name}";
@@ -9,7 +12,6 @@ let
   dbFile      = "/var/referent/${name}/referent.db";
   serverPath  = "/var/referent/${name}/app/server/server.js";
   socketPath  = "/run/referent-${name}.socket";
-  app         = import ./web-frontend;
 in {
   deployment.keys.${pw}.text = password;
 
@@ -43,7 +45,8 @@ in {
     };
   };
 })
-hosts) // {
+hosts) ++ [
+{
   services.nginx = {
     enable = true;
     recommendedGzipSettings = true;
@@ -51,4 +54,4 @@ hosts) // {
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
   };
-}
+} ]
