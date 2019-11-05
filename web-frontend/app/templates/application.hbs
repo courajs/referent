@@ -22,7 +22,7 @@
 {{else}}
   <div class="flex items-stretch h-screen">
     <Sidebar class="flex-none border w-64" />
-    <div class="flex-1 border">
+    <div class="flex-1 border" style="min-width: 350px;">
       {{outlet}}
     </div>
     {{from-elsewhere name="modal-outlet"}}
