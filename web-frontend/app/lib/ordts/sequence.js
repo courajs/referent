@@ -22,6 +22,9 @@ export function parent(atom) {
 
 export class Sequence {
   constructor(id, atoms) {
+    if (!id) {
+      throw new Error("Sequence ORDTs require a valid site id");
+    }
     this.id = id;
     if (atoms) {
       this.atoms = atoms.slice();

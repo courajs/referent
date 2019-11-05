@@ -8,11 +8,13 @@ export default class Auth extends Service {
   @service idb;
   @service sw;
 
-  awaitAuth; awaitAuthChecked;
+  awaitId;
   @tracked authState = 'pending';
   @tracked clientId;
 
   async init() {
+    let resolve;
+    this.awaitId = new Promise(r => resolve = r);
     this.sw.on('authed').subscribe(() => {
       this.authState = 'authed';
     });
@@ -30,6 +32,7 @@ export default class Auth extends Service {
       await tx.store.put(id, 'client_id');
     }
     this.clientId = id;
+    resolve();
 
     let pw = await tx.store.get('password');
     if (pw) {
