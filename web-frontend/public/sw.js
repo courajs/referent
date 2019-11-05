@@ -45,7 +45,7 @@ if (PROD) {
   io = io && io.hasOwnProperty('default') ? io['default'] : io;
 
   const DB_NAME = 'connote';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   async function upgrade(db, oldVersion, newVersion, tx) {
     [].forEach.call(db.objectStoreNames, n => db.deleteObjectStore(n));
 

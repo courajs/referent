@@ -1,7 +1,7 @@
 import {openDB, unwrap} from 'idb';
 
 export const DB_NAME = 'connote';
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 export async function upgrade(db/*, oldVersion, newVersion, tx*/) {
   [].forEach.call(db.objectStoreNames, n => db.deleteObjectStore(n));
 
