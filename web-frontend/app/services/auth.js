@@ -15,12 +15,6 @@ export default class Auth extends Service {
   async init() {
     let resolve;
     this.awaitId = new Promise(r => resolve = r);
-    this.sw.on('authed').subscribe(() => {
-      this.authState = 'authed';
-    });
-    this.sw.on('bad_auth').subscribe(() => {
-      this.authState = 'bad_auth';
-    });
 
     // STATE / MUTATION: it's important to write client_id to indexeddb
     // before sending either of the auth events to the sw.
@@ -34,24 +28,12 @@ export default class Auth extends Service {
     this.clientId = id;
     resolve();
 
-    let pw = await tx.store.get('password');
-    if (pw) {
-      this.authState = 'authed';
-      this.cookie(id, pw);
-      this.sw.send('authed');
-    } else {
-      this.authState = 'unauthed';
-    }
+    this.authState = 'authed';
+    this.cookie(id);
+    this.sw.send('authed');
   }
 
-  submitPassword(pw) {
-    this.authState = 'authing';
-    this.cookie(this.clientId, pw);
-    this.sw.send('check-auth', pw);
-  }
-
-  cookie(id, pw) {
-    document.cookie = `password=${encodeURIComponent(pw)};path=/;max-age=${ONE_YEAR}`;
+  cookie(id) {
     document.cookie = `live_id=${id};path=/;max-age=${ONE_YEAR}`;
   }
 }

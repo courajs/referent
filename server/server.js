@@ -27,28 +27,17 @@ if (fs.existsSync('/run/keys/referent-password')) {
 
 const no_cookie = 'No auth cookie';
 const no_id = 'No client id';
-const no_password = 'No password';
-const wrong_password = 'Incorrect password';
 function checkAuth(cook) {
   if (!cook) {
     console.log(no_cookie);
     return no_cookie;
   }
 
-  let {live_id, password} = cookie.parse(cook);
+  let {live_id} = cookie.parse(cook);
 
   if (!live_id) {
     console.log(no_id);
     return no_id;
-  }
-  if (!password) {
-    console.log(no_password);
-    return no_password;
-  }
-  password = decodeURIComponent(password);
-  if (password !== PASSWORD) {
-    console.log(wrong_password);
-    return wrong_password;
   }
   return null;
 }
