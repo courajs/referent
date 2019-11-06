@@ -7,6 +7,10 @@
     </div>
   </LinkTo>
 
+  <p class="mb-4">
+    <LinkTo @route="home">Home (tutorial)</LinkTo>
+  </p>
+
   <h2>Pages</h2>
   <ul class="mt-4 mb-12">
     {{#each (subscribe this.graph.pages) key="uuid" as |page|}}
