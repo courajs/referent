@@ -1,6 +1,15 @@
-<div class="m-4" style="white-space: pre;">The wiki is just a list of pages, and top-level links between those pages. The links are on a per-page basis, not inline in the text.
+<div class="m-4" style="white-space: pre-wrap;">
+
+{{~!~}}
+This is my offline-first, realtime-collaborative wiki prototype. It's built with CRDTs as described in the lovely article <a href="http://archagon.net/blog/2018/03/24/data-laced-with-history/">Data Laced with History: Causal Trees & Operational CRDTs</a>. It's not well documented, but the code is available <a href="https://github.com/courajs/referent">on GitHub</a>.
+
+The wiki is just a list of pages, and top-level links between those pages. (The links are on a per-page basis, not inline in the text)
 Each page has a title and a body.
 Links are directional - they go out from one page, and into another.
+
+If you're online, then you should see others' edits appear in real time - but it will also cleanly merge offline concurrent edits. It's multi-tab friendly - even if you're offline, your changes will be reflected across tabs.
+
+Feel free to <LinkTo @route="page" @model="0.5162321965653228">sign the guestbook</LinkTo> or to <LinkTo @route="page" @model="0.7054340341579509">leave any feedback</LinkTo>.
 
 Keyboard shortcuts
 ctrl-m     -   add new page
