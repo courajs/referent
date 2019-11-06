@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import {inject as service} from '@ember/service';
 
+const isSafari = navigator.vendor.toLowerCase().indexOf('apple') >= 0;
+
 // TODO: this and live-textarea are pretty much exactly the same,
 // except for the tag being used. can we factor them better?
 export default class extends Component {
@@ -23,7 +25,15 @@ export default class extends Component {
   // experiment with skipping all blank values, or including
   // only an initial one.
   updateValue(el, [seq]) {
-    console.log('update');
+    // Safari does weird things with focus when you change selection region of an
+    // unfocused element. So let's simply update the value in that case.
+    // (it steals focus, but it actually seems buggy if the entire window is in the
+    // background - it sort of only partially steals focus.)
+    if (isSafari && document.activeElement !== el) {
+      let newEval = this._previousEval = seq.indexedEvaluate();
+      el.value = newEval.value;
+      return;
+    }
     let start = el.selectionStart;
     let end = el.selectionEnd;
     let {value,index} = this._previousEval;
