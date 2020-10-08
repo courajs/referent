@@ -3,8 +3,14 @@
 
 module.exports = function(deployTarget) {
   let ENV = {
-    build: {}
+    build: {},
     // include other plugin configuration that applies to all deploy targets here
+    s3: {
+      accessKeyId: process.env.AWS_KEY,
+      secretAccessKey: process.env.AWS_SECRET,
+      region: process.env.AWS_REGION,
+      bucket: process.env.S3_BUCKET,
+    },
   };
 
   if (deployTarget === 'development') {
