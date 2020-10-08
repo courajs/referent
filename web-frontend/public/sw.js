@@ -26,7 +26,7 @@ importScripts('/v/unpkg.com/idb@4.0.3/build/iife/index-min.js');
 
 let IO_HOST, IO_PATH, AUTH_ENDPOINT;
 // This is flipped true by the nix build
-const PROD = false;
+const PROD = true;
 
 if (PROD) {
   IO_HOST = "/";
