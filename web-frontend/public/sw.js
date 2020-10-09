@@ -29,7 +29,7 @@ let IO_HOST, IO_PATH, AUTH_ENDPOINT;
 const PROD = true;
 
 if (PROD) {
-  IO_HOST = "https://tattered-bronzed-rose.glitch.me/";
+  IO_HOST = "/";
   IO_PATH = "/socket.io";
   AUTH_ENDPOINT = "/check-auth"
 } else {
