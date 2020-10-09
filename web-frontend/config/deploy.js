@@ -9,14 +9,14 @@ module.exports = function(deployTarget) {
       accessKeyId: process.env.AWS_KEY,
       secretAccessKey: process.env.AWS_SECRET,
       region: process.env.AWS_REGION,
-      bucket: 'aaron-wiki',
+      bucket: throw new Error("not a deploy branch"),
     },
     's3-index': {
       allowOverwrite: true,
       accessKeyId: process.env.AWS_KEY,
       secretAccessKey: process.env.AWS_SECRET,
       region: process.env.AWS_REGION,
-      bucket: 'aaron-wiki',
+      bucket: throw new Error("not a deploy branch"),
     },
   };
 
