@@ -29,9 +29,9 @@ let IO_HOST, IO_PATH, AUTH_ENDPOINT;
 const PROD = true;
 
 if (PROD) {
-  IO_HOST = "/";
-  IO_PATH = "/sync/socket.io";
-  AUTH_ENDPOINT = "/sync/check-auth"
+  IO_HOST = "https://tattered-bronzed-rose.glitch.me/";
+  IO_PATH = "/socket.io";
+  AUTH_ENDPOINT = "/check-auth"
 } else {
   IO_HOST = "/";
   IO_PATH = "/socket.io";

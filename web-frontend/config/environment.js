@@ -5,7 +5,7 @@ module.exports = function(environment) {
     modulePrefix: 'nomicon',
     environment,
     rootURL: '/',
-    locationType: 'auto',
+    locationType: 'hash',
     emberKeyboard: {
       propagation: true,
     },

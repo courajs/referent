@@ -11,6 +11,13 @@ module.exports = function(deployTarget) {
       region: process.env.AWS_REGION,
       bucket: process.env.S3_BUCKET,
     },
+    's3-index': {
+      allowOverwrite: true,
+      accessKeyId: process.env.AWS_KEY,
+      secretAccessKey: process.env.AWS_SECRET,
+      region: process.env.AWS_REGION,
+      bucket: process.env.S3_BUCKET,
+    },
   };
 
   if (deployTarget === 'development') {
