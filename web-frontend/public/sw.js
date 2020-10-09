@@ -294,4 +294,27 @@ if (PROD) {
 
   self.on('authed', self.ensureSocket);
 
+  self.on('check-auth', async function(pw) {
+    // hit the check auth endpoint. if it fails for auth reasons,
+    // send a bad_auth event to the tabs.
+    // if it succeeds, persist the pw, open the socket,
+    // and send an authed event to the tabs.
+    // if it fails for some other reason, retry it I guess? Log it?
+    let res;
+    try {
+      res = await fetch(AUTH_ENDPOINT);
+    } catch (e) {
+      return console.error('Unexpected problem checking auth', e);
+    }
+
+    if (res.status === 403) {
+      self.broadcast('bad_auth');
+    } else if (res.ok) {
+      let db = await self.dbp;
+      await db.put('meta', pw, 'password');
+      await self.ensureSocket();
+      self.broadcast('authed');
+    }
+  });
+
 }(idb, io));
