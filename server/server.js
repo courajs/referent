@@ -16,14 +16,7 @@ var io = require('socket.io')(http, {
   },
 });
 
-let PASSWORD;
-
-if (fs.existsSync('/run/keys/referent-password')) {
-  PASSWORD = fs.readFileSync('/run/keys/referent-password', 'utf8');
-} else {
-  PASSWORD = "change me";
-}
-
+let PASSWORD = process.env.PASSWORD || "change me";
 
 const no_cookie = 'No auth cookie';
 const no_id = 'No client id';
@@ -54,21 +47,10 @@ function checkAuth(cook) {
 }
 
 
-var dbFile = process.argv[2] || '/var/referent/sqlite.db';
+var dbFile = process.argv[2] || './sqlite.db';
 var exists = fs.existsSync(dbFile);
 fs.mkdirSync(path.dirname(dbFile), {recursive: true});
 var db = new sqlite3.Database(dbFile);
-
-
-app.use(express.static('public'));
-
-app.get('/', function(request, response) {
-  response.sendFile(__dirname + '/public/index.html');
-});
-app.get('/doc/:doc_id', function(request, response) {
-  response.sendFile(__dirname + '/public/index.html');
-});
-
 
 if (!exists) {
   db.serialize(function(){
@@ -134,16 +116,19 @@ io.on('connection', function(socket){
 
   socket.on('ask', function(collections, next) {
     if (!Array.isArray(collections)) { return; }
-    console.log(socket.client_id, 'askin bout', collections);
+    console.log(socket.client_id, 'askin bout stuff');
     let subscriptions = collections.map(clock => canonicalize(clock.collection));
     subscriptions.forEach(s => socket.join(s));
 
     let AFTER = new Array(subscriptions.length).fill('(collection = ? AND server_index > ?)').join(' OR ');
     let values = collections.map(c => [canonicalize(c.collection), c.from]).reduce((a, b) => a.concat(b), []);
 
+    let qstart = new Date();
     db.all('SELECT collection, server_index, client, client_index, value FROM atoms WHERE client != ? AND ('+AFTER+')', socket.client_id, ...values, function(err, data) {
       if (err) { throw err; }
-      console.log(`Found ${data.length} since`, collections);
+      let qend = new Date();
+      console.log('query time', qend - qstart);
+      console.log(`Found ${data.length} new atoms for request`);
       if (data.length === 0) { return; }
       let results = {};
       data.forEach(d => {
@@ -202,11 +187,12 @@ io.on('connection', function(socket){
   });
 });
 
-/*
-setInterval(function() {
-  console.log('connected clients', Object.values(io.sockets.connected).map(s => s.client_id));
-}, 5000);
-*/
+app.get('/', function(req, res) {
+  res.redirect(302, '/index.html');
+})
+
+const assets = process.env.FRONTEND || "http://localhost:3000";
+app.use('/', require('express-http-proxy')(assets));
 
 let listener = http.listen(process.env.PORT, function(){
   console.log('listening on', listener.address());

@@ -16,7 +16,7 @@
     "build-prod": "ember build --prod --disable-analytics",
     "lint:hbs": "ember-template-lint .",
     "lint:js": "eslint .",
-    "start": "ember serve --proxy http://localhost:3030",
+    "start": "ember serve",
     "test": "ember test"
   },
   "devDependencies": {

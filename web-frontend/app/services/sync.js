@@ -16,15 +16,6 @@ import * as operators from 'rxjs/operators';
 window.operators = operators;
 
 
-
-// window.emitter = new Subject();
-// let catted = emitter.pipe(
-//     operators.scan((all,these) => all.concat(these))
-// );
-// window.result = new BehaviorSubject([]);
-// catted.subscribe(result);
-
-
 function enqueue(f) {
   let running = false;
   let waiting = [];

@@ -53,12 +53,6 @@ if (PROD) {
 
     let clocks = db.createObjectStore('clocks', {keyPath:['collection']});
     clocks.createIndex('uniq', ['collection'], {unique: true});
-    clocks.add({
-      collection: 'index',
-      synced_remote: 0,
-      synced_local: 0,
-      last_local: 0,
-    });
 
     let data = db.createObjectStore('data',
         {keyPath: ['collection', 'client', 'client_index']});
@@ -204,15 +198,32 @@ if (PROD) {
     });
   };
 
+  self.keepLatest = function(f) {
+    let running = false;
+    let again = false;
+    return async function(...args) {
+      if (running) {
+        again = true;
+      } else {
+        running = true;
+        await f();
+        while (again) {
+          again = false;
+          await f();
+        }
+        running = false;
+      }
+    }
+  };
 
   // server replies with a 'tell' event, so most of the hard stuff
   // is in there
-  self.syncRemote = async function() {
+  self.syncRemote = self.keepLatest(async function() {
     let {db, socket} = self;
     let clocks = await db.getAll('clocks');
     let ask = clocks.map(c => { return {collection: c.collection, from: c.synced_remote}; });
     socket.emit('ask', ask);
-  };
+  });
 
   self.syncAll = () => Promise.all([self.syncRemote(), self.syncOwn()]);
 

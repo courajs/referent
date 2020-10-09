@@ -13,7 +13,6 @@ export default class GraphService extends Service {
     window.graphservice = this;
   }
 
-
   // Queries
   
   async attributesForPage(uuid) {
