@@ -1,24 +1,5 @@
 {{#if (eq this.auth.authState "pending")}}
   Loading...
-{{else if (eq this.auth.authState "authing")}}
-  Loading...
-{{else if (eq this.auth.authState "unauthed")}}
-  Enter password:
-  <Input
-    @value={{this.password}}
-    @enter={{bind this.auth.submitPassword}}
-    type="password"
-    class="border rounded my-2 text-center leading-tight focus:outline-none focus:shadow-outline"
-  />
-{{else if (eq this.auth.authState "bad_auth")}}
-  <p class="text-red">Password incorrect, try again</p>
-  Enter password:
-  <Input
-    @value={{this.password}}
-    @enter={{bind this.auth.submitPassword}}
-    type="password"
-    class="border rounded my-2 text-center leading-tight focus:outline-none focus:shadow-outline"
-  />
 {{else}}
   <div class="flex items-stretch h-screen">
     <Sidebar class="flex-none border w-64" />
