@@ -2,7 +2,10 @@
   Loading...
 {{else}}
   <div class="flex items-stretch h-screen">
-    <Sidebar class="flex-none border w-64" />
+    <Sidebar
+      class="flex-none border w-64"
+      @search={{bind this.search}}
+    />
     <div class="flex-1 border" style="min-width: 350px;">
       {{outlet}}
     </div>

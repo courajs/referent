@@ -25,4 +25,8 @@ export default Controller.extend({
     this.transitionToRoute('page', p.uuid);
     this.set('showModal', false);
   },
+
+  search() {
+    this.set('showModal', true);
+  }
 });

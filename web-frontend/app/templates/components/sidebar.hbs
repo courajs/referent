@@ -1,11 +1,17 @@
 <div ...attributes>
-  <LinkTo @route="new">
-    <div class="text-center my-4">
+  <div class="text-center my-4">
+    <LinkTo @route="new">
       <button class="bg-blue hover:bg-blue-dark text-white py-2 px-4 rounded mx-auto">
         New page
       </button>
-    </div>
-  </LinkTo>
+    </LinkTo>
+    <button
+      onclick={{@search}}
+      class="bg-purple hover:bg-purple-dark text-white py-2 px-4 rounded mx-auto">
+      {{fa-icon "search"}}
+    </button>
+  </div>
+  
 
   <p class="mb-4">
     <LinkTo @route="home">Home (tutorial)</LinkTo>
