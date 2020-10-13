@@ -21,7 +21,7 @@ export default Component.extend({
   },
 
   results: computed('search', 'all', function() {
-    let search = this.search.split(' ');
+    let search = this.search.toLowerCase().split(' ');
     let options = this.all.filter((item) => {
       let searchVal;
       if (this.path) {
