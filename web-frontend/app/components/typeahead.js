@@ -44,7 +44,7 @@ export default Component.extend({
     this.set('search', newTerm);
   },
 
-  focusEl(el) {
+  focus(el) {
     el.focus();
   },
 
