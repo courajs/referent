@@ -23,7 +23,9 @@
   </div>
 
   {{#if this.showModal}}
-    <Modal @close={{action (mut this.showModal) false}}>
+    <Modal
+      @close={{action (mut this.showModal) false}}
+    >
       {{! HACK: this @path is so janky}}
       <Typeahead
         @choose={{bind this.goToPage}}
