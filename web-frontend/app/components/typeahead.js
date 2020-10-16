@@ -1,65 +1,65 @@
-import Component from '@ember/component';
-import {get, computed} from '@ember/object';
-import {or} from '@ember/object/computed';
+import Component from '@glimmer/component';
+import {tracked} from '@glimmer/tracking';
+import {get, action} from '@ember/object';
 
-import {bound} from 'nomicon/lib/hotkeys';
 import {CREATE} from 'nomicon/lib/typeahead';
 
-export default Component.extend({
-  CREATE,
-  choice: 0,
-  path: '',
-  search: '',
-  empty: null,
-  all: or('options', 'empty'),
-  choose() {},
+export default class extends Component {
+  CREATE = CREATE;
 
-  init() {
-    this.empty = [];
-    this._super(...arguments);
-    this.set('keyboardActivated', true);
-  },
+  @tracked choice = 0;
+  @tracked search = '';
 
-  results: computed('search', 'all', function() {
+  get results() {
     let search = this.search.toLowerCase().split(' ');
-    let options = this.all.filter((item) => {
+    let options = this.args.options || [];
+    options = options.filter((item) => {
       let searchVal;
-      if (this.path) {
-        // @path can be a 'dot.separated.string';
-        searchVal = get(item, this.path).toLowerCase();
+      if (this.args.path) {
+        searchVal = get(item, this.args.path);
       } else {
-        searchVal = item.toLowerCase();
+        searchVal = item;
       }
+      searchVal = searchVal.toLowerCase();
       return containsForward(searchVal, search);
     });
-
-    if (this.showCreateOption && this.search) {
+    if (this.args.showCreateOption && this.search) {
       options.push(CREATE);
     }
     return options;
-  }),
+  }
 
+  @action
   updateSearch(newTerm) {
-    this.set('choice', 0);
-    this.set('search', newTerm);
-  },
+    this.choice = 0;
+    this.search = newTerm;
+  }
 
   focus(el) {
     el.focus();
-  },
+  }
 
-  hotkeys: bound({
-    'typeahead-up': function() {
-      this.set('choice', Math.max(0,  this.choice - 1));
-    },
-    'typeahead-down': function() {
-      this.set('choice', Math.min(this.results.length-1, this.choice + 1));
-    },
-    'typeahead-confirm': function() {
-      this.choose(this.results[this.choice], this.search);
-    },
-  }),
-});
+  @action
+  up() {
+    this.choice = Math.max(0, this.choice-1);
+  }
+
+  @action
+  down() {
+    this.choice = Math.min(this.results.length-1, this.choice+1);
+  }
+
+  @action
+  confirm() {
+    this.args.choose(this.results[this.choice], this.search);
+  }
+
+  hotkeys = {
+    'typeahead-up': this.up,
+    'typeahead-down': this.down,
+    'typeahead-confirm': this.confirm,
+  };
+}
 
 function containsForward(string, searchList) {
   let index = 0;
