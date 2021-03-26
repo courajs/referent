@@ -1,5 +1,5 @@
-import Application from 'my-app/app';
-import config from 'my-app/config/environment';
+import Application from 'nomicon/app';
+import config from 'nomicon/config/environment';
 import * as QUnit from 'qunit';
 import { setApplication } from '@ember/test-helpers';
 import { setup } from 'qunit-dom';

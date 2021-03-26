@@ -2,6 +2,8 @@ import Controller from '@ember/controller';
 import {inject} from '@ember/service';
 import {tracked} from '@glimmer/tracking';
 
+console.log('hi');
+
 import {bound} from 'nomicon/lib/hotkeys';
 import env from 'nomicon/config/environment';
 

@@ -1,5 +1,7 @@
 import EmberRouter from '@ember/routing/router';
-import config from 'my-app/config/environment';
+import config from 'nomicon/config/environment';
+
+console.log('hey');
 
 export default class Router extends EmberRouter {
   location = config.locationType;
@@ -12,5 +14,3 @@ Router.map(function() {
   this.route('page', { path: '/page/:page_id' });
   this.route('inject');
 });
-
-export default Router;
