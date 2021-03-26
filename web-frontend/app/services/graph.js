@@ -9,7 +9,8 @@ export default class GraphService extends Service {
   @service sync;
   @service auth;
 
-  init() {
+  init(...args) {
+    super.init(...args);
     window.graphservice = this;
   }
 

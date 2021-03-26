@@ -12,7 +12,8 @@ export default class Auth extends Service {
   @tracked authState = 'pending';
   @tracked clientId;
 
-  async init() {
+  async init(...args) {
+    super.init(...args);
     let resolve;
     this.awaitId = new Promise(r => resolve = r);
     this.sw.on('authed').subscribe(() => {

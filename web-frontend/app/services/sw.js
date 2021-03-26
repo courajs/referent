@@ -47,7 +47,8 @@ export default class extends Service {
   incoming = new Subject();
   outgoing = new Subject();
 
-  init() {
+  init(...args) {
+    super.init(...args);
     fromEvent(navigator.serviceWorker, 'message', e => e.data)
       .subscribe(this.incoming);
     this.outgoing.subscribe({

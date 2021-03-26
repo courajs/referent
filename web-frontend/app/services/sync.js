@@ -63,7 +63,8 @@ export default class Sync extends Service {
   swNotifier = new Subject();
   localNotifier = new Subject();
 
-  init() {
+  init(...args) {
+    super.init(...args);
     window.syncService = this;
     this.swNotifier.subscribe(this.sw.outgoing);
     this.sw.on('update').subscribe(this.localNotifier);
