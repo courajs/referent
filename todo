@@ -1,0 +1,8 @@
+work on frontend build deprecations
+- replace ember-cli-tailwind
+- upgrade ember-elsewhere's ember-cli-babel version
+
+work on ember runtime deprecations? Haven't seen any yet but they probably exist.
+
+
+upgrade ember 4
