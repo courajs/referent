@@ -5,3 +5,10 @@ https://tailwindcss-v0.netlify.app//docs/installation
 @tailwind components;
 @tailwind utilities;
 
+/* How tf do I inline imports? postcss-import seems to do nothing */
+.absolute-centered {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+ }
