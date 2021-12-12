@@ -54,8 +54,8 @@
     "ember-cli-deploy-s3-index": "^1.2.0",
     "ember-cli-htmlbars": "^5.7.1",
     "ember-cli-inject-live-reload": "^2.0.2",
+    "ember-cli-postcss": "^7.0.2",
     "ember-cli-sri": "^2.1.1",
-    "ember-cli-tailwind": "^0.7.0",
     "ember-cli-terser": "^4.0.2",
     "ember-composable-helpers": "^2.1.0",
     "ember-concurrency": "^2.1.0",
@@ -88,6 +88,7 @@
     "qunit": "^2.15.0",
     "qunit-dom": "^1.6.0",
     "rxjs": "^6.5.2",
+    "tailwindcss": "0.7.4",
     "uuid": "^3.3.2"
   },
   "engines": {

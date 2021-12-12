@@ -1,2 +1,7 @@
-@import 'tailwind.css';
+/*
+https://tailwindcss-v0.netlify.app//docs/installation
+*/
+@tailwind preflight;
+@tailwind components;
+@tailwind utilities;
 
