@@ -1,8 +1,8 @@
 {{#let (subscribe @sequence.seq) as |latest|}}
   <input
-    {{did-insert (bind this.initialValue) latest}}
-    {{did-update (bind this.updateValue) latest}}
-    oninput={{action this.update latest}}
+    {{did-insert this.initialValue latest}}
+    {{did-update this.updateValue latest}}
+    {{on "input" (fn this.update latest)}}
     ...attributes
   >
 {{/let}}

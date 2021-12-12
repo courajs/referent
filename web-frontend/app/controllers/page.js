@@ -1,5 +1,6 @@
 import Controller from '@ember/controller';
 import {inject} from '@ember/service';
+import {action} from '@ember/object';
 import {task, taskGroup, waitForProperty} from 'ember-concurrency';
 import {take,last} from 'rxjs/operators';
 
@@ -52,6 +53,7 @@ export default Controller.extend({
     },
   }),
 
+  @action
   _modalChoice(choice, searchText) {
     this.set('modalChoice', choice);
     this.set('modalSearchText', searchText);
@@ -184,6 +186,7 @@ export default Controller.extend({
     return this.transitionToRoute('page', choice.page_uuid);
   }).group('prompts'),
 
+  @action
   close() {
     this.prompts.cancelAll();
     this.setProperties(MODAL_DEFAULTS);

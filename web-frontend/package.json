@@ -38,8 +38,6 @@
     "canonicalize": "^1.0.1",
     "ember-ajax": "^3.1.0",
     "ember-auto-import": "^1.11.3",
-    "ember-awesome-macros": "^4.0.0",
-    "ember-bind-helper": "^0.3.2",
     "ember-cli": "~3.28.4",
     "ember-cli-app-version": "^5.0.0",
     "ember-cli-babel": "^7.26.6",

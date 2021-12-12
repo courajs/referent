@@ -1,6 +1,7 @@
 import Service, {inject as service} from '@ember/service';
 import {tracked} from '@glimmer/tracking';
 import {first} from 'rxjs/operators';
+import {action} from '@ember/object';
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -45,6 +46,7 @@ export default class Auth extends Service {
     }
   }
 
+  @action
   submitPassword(pw) {
     this.authState = 'authing';
     this.cookie(this.clientId, pw);

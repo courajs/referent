@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import {inject as service} from '@ember/service';
+import {action} from '@ember/object';
 
 const isSafari = navigator.vendor.toLowerCase().indexOf('apple') >= 0;
 
@@ -10,12 +11,14 @@ export default class extends Component {
 
   _previousEval;
 
+  @action
   update(seq, e) {
     let fresh = seq.become(e.target.value);
     this._previousEval = seq.indexedEvaluate();
     this.sync.write(this.args.sequence.id, fresh);
   }
 
+  @action
   initialValue(el, [seq]) {
     this._previousEval = seq.indexedEvaluate();
     el.value = this._previousEval.value;
@@ -24,6 +27,7 @@ export default class extends Component {
   // TODO: why do we get multiple blank values initially?
   // experiment with skipping all blank values, or including
   // only an initial one.
+  @action
   updateValue(el, [seq]) {
     // Safari does weird things with focus when you change selection region of an
     // unfocused element. So let's simply update the value in that case.

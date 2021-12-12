@@ -6,7 +6,7 @@
   Enter password:
   <Input
     @value={{this.password}}
-    @enter={{bind this.auth.submitPassword}}
+    @enter={{this.auth.submitPassword}}
     type="password"
     class="border rounded my-2 text-center leading-tight focus:outline-none focus:shadow-outline"
   />
@@ -15,7 +15,7 @@
   Enter password:
   <Input
     @value={{this.password}}
-    @enter={{bind this.auth.submitPassword}}
+    @enter={{this.auth.submitPassword}}
     type="password"
     class="border rounded my-2 text-center leading-tight focus:outline-none focus:shadow-outline"
   />
@@ -23,7 +23,7 @@
   <div class="flex items-stretch h-screen">
     <Sidebar
       class="flex-none border w-64"
-      @search={{bind this.search}}
+      @search={{this.search}}
     />
     <div class="flex-1 border" style="min-width: 350px;">
       {{outlet}}
@@ -47,7 +47,7 @@
     >
       {{! HACK: this @path is so janky}}
       <Typeahead
-        @choose={{bind this.goToPage}}
+        @choose={{this.goToPage}}
         @options={{this.graph.pages._subject.value}}
         @path="title.source._subject.value.value"
         @placeholder="Go to page..."

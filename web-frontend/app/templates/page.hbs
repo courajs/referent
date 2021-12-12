@@ -6,7 +6,7 @@
       <ul class="list-reset">
         {{#each links.incoming as |link|}}
           <li>
-            <button onclick={{bind this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
+            <button onclick={{this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
             <LinkTo
               @route="page"
               @model={{link.page_uuid}}
@@ -30,7 +30,7 @@
             >
               {{~get (subscribe link.title) "value"~}}
             </LinkTo>
-            <button onclick={{bind this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
+            <button onclick={{this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
           </li>
         {{/each}}
       </ul>
@@ -59,9 +59,9 @@
 </div>
 
 {{#if this.showModal}}
-  <Modal @close={{bind this.close}}>
+  <Modal @close={{this.close}}>
     <Typeahead
-      @choose={{bind this._modalChoice}}
+      @choose={{this._modalChoice}}
       @options={{this.modalOptions}}
       @path={{this.modalPath}}
       @placeholder={{this.modalLabel}}

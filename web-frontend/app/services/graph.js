@@ -1,9 +1,6 @@
 import Service, {inject as service} from '@ember/service';
 import {map,publishBehavior} from 'rxjs/operators';
-
-import {EquivMap} from '@thi.ng/associative';
-
-window.EquivMap = EquivMap;
+import {action} from '@ember/object';
 
 export default class GraphService extends Service {
   @service sync;
@@ -82,6 +79,7 @@ export default class GraphService extends Service {
 
   // Mutations
 
+  @action
   async newPage() {
     let g = this.sync.graph.getSubject().value;
     let atom = g.addNode();
@@ -89,6 +87,7 @@ export default class GraphService extends Service {
     return atom;
   }
 
+  @action
   async link(fromuuid, touuid) {
     let g = this.sync.graph.getSubject().value;
     let atom = g.addEdge(fromuuid, touuid);
@@ -96,6 +95,7 @@ export default class GraphService extends Service {
     return atom;
   }
 
+  @action
   async delete(uuid) {
     let g = this.sync.graph.getSubject().value;
     let atom = g.delete(uuid);
