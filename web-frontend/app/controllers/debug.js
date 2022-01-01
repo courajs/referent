@@ -20,6 +20,16 @@ export default class extends Controller {
 
   @tracked event_log = [];
 
+  get change_pre() {
+    let msgs = this.sw.change_log.map(({at, keys}) => {
+        return `${at.toLocaleString()}: ${JSON.stringify(keys)}`;
+      });
+    return JSON.stringify(
+      msgs,
+      null,
+      2);
+  }
+
   get event_pre() {
     return JSON.stringify(this.event_log, null, 2);
   }

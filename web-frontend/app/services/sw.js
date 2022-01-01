@@ -52,10 +52,24 @@ export default class extends Service {
   incoming_log = new ReplaySubject();
   outgoing_log = new ReplaySubject();
 
+  @tracked
+  change_log = [];
+
   constructor(...args) {
     super(...args);
     this.incoming.pipe(timestamp()).subscribe(this.incoming_log);
     this.outgoing.pipe(timestamp()).subscribe(this.outgoing_log);
+
+    navigator.serviceWorker.addEventListener('controllerchange', (e) => {
+      console.error('there was a controller change!');
+      this.change_log.push({
+        at: new Date(),
+        ev: e,
+        keys: Object.keys(e),
+      });
+      this.change_log = this.change_log;
+    });
+
 
     fromEvent(navigator.serviceWorker, 'message', e => e.data)
       .subscribe(this.incoming);
