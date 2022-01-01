@@ -6,7 +6,7 @@
       <ul class="list-reset">
         {{#each links.incoming as |link|}}
           <li>
-            <button onclick={{this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
+            <button {{on "click" (fn this.graph.delete link.link_uuid)}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
             <LinkTo
               @route="page"
               @model={{link.page_uuid}}
@@ -30,7 +30,7 @@
             >
               {{~get (subscribe link.title) "value"~}}
             </LinkTo>
-            <button onclick={{this.graph.delete link.link_uuid}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
+            <button {{on "click" (fn this.graph.delete link.link_uuid)}} class="w-6 h-6 bg-red text-white border rounded shadow active:shadow-inner active:bg-red-dark">{{fa-icon "trash"}}</button>
           </li>
         {{/each}}
       </ul>
