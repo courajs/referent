@@ -1,6 +1,8 @@
 import Service from '@ember/service';
-import {Subject, fromEvent} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {Subject, ReplaySubject, fromEvent} from 'rxjs';
+import {filter, map, timestamp} from 'rxjs/operators';
+import {tracked} from '@glimmer/tracking';
+import {action} from '@ember/object';
 
 if (!navigator.serviceWorker.controller) {
   console.log('no controlling worker!');
@@ -47,13 +49,21 @@ export default class extends Service {
   incoming = new Subject();
   outgoing = new Subject();
 
-  init(...args) {
-    super.init(...args);
+  incoming_log = new ReplaySubject();
+  outgoing_log = new ReplaySubject();
+
+  constructor(...args) {
+    super(...args);
+    this.incoming.pipe(timestamp()).subscribe(this.incoming_log);
+    this.outgoing.pipe(timestamp()).subscribe(this.outgoing_log);
+
     fromEvent(navigator.serviceWorker, 'message', e => e.data)
       .subscribe(this.incoming);
+
     this.outgoing.subscribe({
       next(e) {
         if (!navigator.serviceWorker.controller) {
+          console.error("No controlling service worker, to receive message:", e);
           throw new Error('No controlling service worker!');
         }
         navigator.serviceWorker.controller.postMessage(e);

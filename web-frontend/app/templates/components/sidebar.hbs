@@ -3,9 +3,7 @@
     <LinkTo @route="new">
       <button class="bg-blue hover:bg-blue-dark text-white py-2 px-4 rounded mx-auto">
         New page
-      </button>
-      {{~! this comment with ~ strips whitespace, to avoid link underline reaching to next element ~}}
-    </LinkTo>
+      </button></LinkTo>
     <button
       onclick={{@search}}
       class="bg-purple hover:bg-purple-dark text-white py-2 px-4 rounded mx-auto">
@@ -17,6 +15,10 @@
   <p class="mb-4">
     <LinkTo @route="home">Home (tutorial)</LinkTo>
   </p>
+  <p class="mb-4">
+    <LinkTo @route="debug">Debug</LinkTo>
+  </p>
+
 
   <h2>Pages</h2>
   <ul class="mt-4 mb-12">

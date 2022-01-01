@@ -82,20 +82,12 @@ if (PROD) {
     self.handlers[ev] = self.handlers[ev] || [];
     self.handlers[ev].push(handler);
   };
-  self.once = function(ev, handler) {
-    let skip = false;
-    self.handlers[ev] = self.handlers[ev] || [];
-    self.handlers[ev].push((...args) => {
-      if (!skip) {
-        skip = true;
-        handler(...args);
-      }
-    });
+  self.every_message_handlers = [];
+  self.on_every_message = function(handler) {
+    self.every_message_handlers.push(handler);
   };
   self.addEventListener('message', function(event) {
-    if (self.handlers.message) {
-      self.handlers.message.forEach(h => h(event));
-    }
+    self.every_message_handlers.forEach(h => h(event));
 
     if (Array.isArray(event.data)) {
       let [kind,data] = event.data;
@@ -286,6 +278,10 @@ if (PROD) {
       socket.io.reconnection(true);
     });
   };
+
+  self.on('sw_ping', function(event) {
+    event.source.postMessage('sw_pong');
+  });
 
   self.on('ask', () => {
     if (self.socket) {

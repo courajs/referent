@@ -1,0 +1,11 @@
+<p>Hello debug</p>
+
+<p>
+  <button
+    class="bg-grey hover:bg-grey-dark py-2 px-4 rounded mx-auto"
+    {{on 'click' this.ping}}
+  >Ping</button>
+</p>
+
+Log:
+<pre>{{this.event_pre}}</pre>

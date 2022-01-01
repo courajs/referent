@@ -8,6 +8,7 @@ export default class Router extends EmberRouter {
 
 Router.map(function() {
   this.route('home');
+  this.route('debug');
   this.route('new');
   this.route('page', { path: '/page/:page_id' });
   this.route('inject');
