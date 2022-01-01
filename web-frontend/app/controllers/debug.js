@@ -3,9 +3,16 @@ import {inject as service} from '@ember/service';
 import {action} from '@ember/object';
 import {tracked} from '@glimmer/tracking';
 import {merge} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 function logify({at, message}) {
   return {kind: 'message', message};
+}
+
+function tag(kind) {
+  return map(function(o) {
+    return Object.assign({kind}, o);
+  });
 }
 
 export default class extends Controller {
@@ -22,15 +29,15 @@ export default class extends Controller {
 
     let last;
     merge(
-      this.sw.incoming_log,
-      this.sw.outgoing_log,
+      this.sw.incoming_log.pipe(tag('in')),
+      this.sw.outgoing_log.pipe(tag('out')),
     ).subscribe(
-      ({value, timestamp}) => {
-        if (last && (timestamp-last > 10)) {
+      ({kind, value, timestamp}) => {
+        if (last && (timestamp-last > 50)) {
           this.event_log.push({kind:'wait', duration: timestamp-last});
         }
         last = timestamp;
-        this.event_log.push({kind:'message', message: value});
+        this.event_log.push({kind, message: value});
         this.event_log = this.event_log;
       }
     )
