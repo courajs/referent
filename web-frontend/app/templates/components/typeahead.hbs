@@ -1,4 +1,11 @@
 <style>
+  /* 
+  //  This keeps empty or whitespace-only entries from
+  //  collapsing to zero-height.
+  //  The main other option would be to use CSS to prevent
+  //  whitespace from collapsing, but then we have to be
+  //  careful about whitespace in the template.
+  */
   .typeahead-choice::after {
     content: '\200b';
   }
