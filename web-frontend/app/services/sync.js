@@ -72,8 +72,10 @@ export default class Sync extends Service {
 
   async prepare(id) {
     let db = await this.idb.db;
-    await ensureClockForCollection(db, id);
-    this.sw.send('ask');
+    let newly_created = await ensureClockForCollection(db, id);
+    if (newly_created) {
+      this.sw.send('ask');
+    }
     return db;
   }
 

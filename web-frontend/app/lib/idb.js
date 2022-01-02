@@ -73,15 +73,11 @@ export async function writeToCollection(db, collection, items) {
 
 export async function ensureClockForCollection(db, collection) {
   let tx = db.transaction('clocks', 'readwrite');
-  let store = unwrap(tx.objectStore('clocks'));
-  store.add({
+  tx.objectStore('clocks').add({
     collection,
     synced_remote: 0,
     synced_local: 0,
     last_local: 0,
-  }).onerror = function(evt) {
-    evt.preventDefault();
-    evt.stopImmediatePropagation();
-  }
-  return tx.done;
+  });
+  return tx.done.then(()=>true, ()=>false);
 }
