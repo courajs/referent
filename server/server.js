@@ -116,6 +116,7 @@ io.on('connection', function(socket){
 
   socket.on('ask', function(collections, next) {
     if (!Array.isArray(collections)) { return; }
+    if (collections.length === 0) { return; }
     console.log(socket.client_id, 'askin bout stuff');
     let subscriptions = collections.map(clock => canonicalize(clock.collection));
     subscriptions.forEach(s => socket.join(s));
