@@ -188,9 +188,9 @@ io.on('connection', function(socket){
   });
 });
 
-app.get('/', function(req, res) {
-  res.redirect(302, '/index.html');
-})
+// app.get('/', function(req, res) {
+//   res.redirect(302, '/index.html');
+// })
 
 const assets = process.env.FRONTEND || "http://localhost:3000";
 app.use('/', require('express-http-proxy')(assets));

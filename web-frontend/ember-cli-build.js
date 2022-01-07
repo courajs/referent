@@ -9,9 +9,16 @@ const path = require('path');
 class Toucher extends Plugin {
   async build(...args) {
     await fse.copy(this.inputPaths[0], this.outputPath);
-    let file_manifest = await crawl_filenames(this.outputPath);
-    console.dir(file_manifest);
-    fse.writeFileSync(this.outputPath + '/thing.txt', JSON.stringify(file_manifest));
+    let all_artifacts = await crawl_filenames(this.outputPath);
+    let artifacts_string = JSON.stringify(all_artifacts, null, 2);
+    let prepend_string = `const ASSETS = ${artifacts_string};\n`;
+
+    let sw_filename = all_artifacts.find(file => file.match(/^sw.*\.js$/));
+    let outpath = path.join(this.outputPath, sw_filename);
+    let main_content = await fse.readFile(outpath);
+    await fse.unlink(outpath);
+    await fse.writeFile(outpath, prepend_string);
+    await fse.appendFile(outpath, main_content);
   }
 }
 
