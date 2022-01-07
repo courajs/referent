@@ -188,12 +188,14 @@ io.on('connection', function(socket){
   });
 });
 
-// app.get('/', function(req, res) {
-//   res.redirect(302, '/index.html');
-// })
-
 const assets = process.env.FRONTEND || "http://localhost:3000";
-app.use('/', require('express-http-proxy')(assets));
+app.use('/', function(req, res, next) {
+  let accept = req.header('Accept');
+  if (accept && accept.includes('text/html')) {
+    req.url = '/index.html';
+  }
+  next();
+}, require('express-http-proxy')(assets));
 
 let listener = http.listen(process.env.PORT, function(){
   console.log('listening on', listener.address());
