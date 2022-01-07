@@ -62,18 +62,20 @@ async function fetch_asset(req) {
 async function fetch_index(req) {
   let c = await caches.open(INDEX_CACHE);
   // Update index.html in the background
-  c.add('/');
-  return c.match('/');
+  c.add('/index.html');
+  return c.match('/index.html');
 }
 
 async function do_install() {
   await Promise.all([install_index(), install_assets()]);
 }
 async function install_index() {
+  console.log('caching index');
   let c = await caches.open(INDEX_CACHE);
-  await c.add('/');
+  await c.add('/index.html');
 }
 async function install_assets() {
+  console.log('caching assets');
   let c = await caches.open(ASSET_CACHE);
   await c.addAll(ASSETS);
 }
@@ -149,8 +151,6 @@ if (PROD) {
   // right now we just take everything over, and
   // all pages will refresh in response to the controllerchange
     self.addEventListener('install', async function installEventListenerCallback(event) {
-      console.log('caching assets');
-
       let install = do_install();
       event.waitUntil(install);
       await install;
